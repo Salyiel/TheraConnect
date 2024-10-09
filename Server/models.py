@@ -1,12 +1,12 @@
 from datetime import datetime, timezone
-from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
-from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from app import db
 
 # Many-to-many relationship between User and Therapist
-user_therapist_association = db.Table('user_therapist_association',
+user_therapist_association = db.Table(
+    'user_therapist_association',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('therapist_id', db.Integer, db.ForeignKey('therapist.id'), primary_key=True)
 )
@@ -25,7 +25,7 @@ class User(db.Model, SerializerMixin):
     appointments = db.relationship('Appointment', back_populates='user', lazy=True)
     therapists = db.relationship('Therapist', secondary=user_therapist_association, back_populates='users', lazy='dynamic')
 
-    # Serializer fields
+    # Serializer rules
     serialize_rules = ('-password_hash', 'appointments', 'therapists')
 
     # Validations
@@ -58,6 +58,7 @@ class Therapist(db.Model, SerializerMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     specialization = db.Column(db.String(100), nullable=False)
+    license_number = db.Column(db.String(50), unique=True, nullable=False)  # New field for license number
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
@@ -67,8 +68,15 @@ class Therapist(db.Model, SerializerMixin):
 
     serialize_rules = ('-appointments', '-users')
 
+    # Validations
+    @validates('license_number')
+    def validate_license_number(self, key, value):
+        if len(value) < 6:
+            raise ValueError("License number must be at least 6 characters.")
+        return value
+
     def __repr__(self):
-        return f'<Therapist {self.id}: {self.name} ({self.specialization})>'
+        return f'<Therapist {self.id}: {self.name} ({self.specialization}, License: {self.license_number})>'
 
 class Appointment(db.Model, SerializerMixin):
     __tablename__ = 'appointment'
