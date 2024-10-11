@@ -1,8 +1,16 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
+from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
+import os
+
+# Twilio configuration
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 
 # Many-to-many relationship between User and Therapist
 user_therapist_association = db.Table(
@@ -94,6 +102,19 @@ class Appointment(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Appointment {self.id}: {self.date} (Status: {self.status})>'
+
+    def send_reminder(self):
+        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        message_body = f'Reminder: You have an appointment on {self.date}.'
+        
+        try:
+            client.messages.create(
+                to=self.user.phone,
+                from_=TWILIO_PHONE_NUMBER,
+                body=message_body
+            )
+        except TwilioRestException as e:
+            print(f'Error sending SMS: {e}')
 
 class Specialization(db.Model, SerializerMixin):
     __tablename__ = 'specialization'
