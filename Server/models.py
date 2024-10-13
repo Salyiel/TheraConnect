@@ -86,35 +86,23 @@ class Therapist(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Therapist {self.id}: {self.name} ({self.specialization}, License: {self.license_number})>'
 
+
 class Appointment(db.Model, SerializerMixin):
     __tablename__ = 'appointment'
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, nullable=False)
-    status = db.Column(db.String(50), default='pending')  # Default status is 'pending'
+    status = db.Column(db.String(50), default='pending')
+    reminder_sent = db.Column(db.Boolean, default=False)  # Track if reminder was sent
     
-    # Foreign Keys
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     therapist_id = db.Column(db.Integer, db.ForeignKey('therapist.id'), nullable=False)
 
-    # Relationships
     user = db.relationship('User', back_populates='appointments')
     therapist = db.relationship('Therapist', back_populates='appointments')
 
     def __repr__(self):
         return f'<Appointment {self.id}: {self.date} (Status: {self.status})>'
 
-    def send_reminder(self):
-        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-        message_body = f'Reminder: You have an appointment on {self.date}.'
-        
-        try:
-            client.messages.create(
-                to=self.user.phone,
-                from_=TWILIO_PHONE_NUMBER,
-                body=message_body
-            )
-        except TwilioRestException as e:
-            print(f'Error sending SMS: {e}')
 
 class Specialization(db.Model, SerializerMixin):
     __tablename__ = 'specialization'
