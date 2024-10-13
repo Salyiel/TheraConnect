@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/ClientLanding.css";
-import firstImage from "../images/istockphoto-1435001168-612x612.jpg"; // Correctly import image
+import firstImage from "../images/istockphoto-1435001168-612x612.jpg";
 
 const ClientLanding = () => {
   return (
@@ -20,7 +20,7 @@ const ClientLanding = () => {
       </header>
 
       <div className="content">
-        <img src={firstImage} alt="Therapist" /> {/* Reference image correctly */}
+        <img src={firstImage} alt="Therapist" />
         <h1 className="head">Connect with a Therapist Today!</h1>
         <p className="message">
           Your mental health is a priority. Find the right therapist who suits your needs.
@@ -33,7 +33,7 @@ const ClientLanding = () => {
       </div>
 
       <footer className="footer">
-        <p>Are you a therapist? <Link to="therapist-landing">Switch to Therapist</Link></p>
+        <p>Are you a therapist? Switch to <Link to="/therapist-landing" className="therapist-link">Therapist</Link> </p>
       </footer>
     </div>
   );

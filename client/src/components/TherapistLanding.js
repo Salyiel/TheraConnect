@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/TherapistLanding.css"; // Use the same CSS file for consistent styling
+import "../styles/TherapistLanding.css";
 
 const TherapistLanding = () => {
   return (

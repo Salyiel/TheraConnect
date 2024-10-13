@@ -4,7 +4,7 @@ body {
 }
 
 .landing-page {
-  background-image: url('../images/image 5.jpg'); /* Make sure the path is correct */
+  background-image: url('../images/image 5.jpg');
   background-size: cover;
   background-position: center;
   height: 100vh;
@@ -16,7 +16,6 @@ body {
   overflow: hidden;
 }
 
-/* Dark overlay for background image */
 .landing-page::before {
   content: "";
   position: absolute;
@@ -24,8 +23,8 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
-  z-index: 1; /* Make sure overlay is above the background but below content */
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
 }
 
 .navbar {
@@ -34,8 +33,8 @@ body {
   align-items: center;
   padding: 20px;
   background: rgba(0, 0, 0, 0.5);
-  position: relative; /* Keep navbar above the overlay */
-  z-index: 2; /* Ensure it is above the overlay */
+  position: relative;
+  z-index: 2;
 }
 
 .nav-links ul {
@@ -45,27 +44,27 @@ body {
 }
 
 .nav-links a {
-  color: #fff; /* Ensure the links are white */
+  color: #fff;
   text-decoration: none;
-  transition: color 0.3s; /* Add a transition for hover effect */
+  transition: color 0.3s;
 }
 
 .nav-links a:hover {
-  color: #ffcc00; /* Optional: Change color on hover for visibility */
+  color: #ffcc00;
 }
 
 .content {
   text-align: center;
   margin: auto;
-  padding: 40px; /* Added padding to avoid clustering */
+  padding: 40px;
   animation: fadeIn 1s ease-in-out;
-  position: relative; /* Keep content above the overlay */
-  z-index: 2; /* Ensure it is above the overlay */
-  display: flex; /* Use flexbox for alignment */
-  flex-direction: column; /* Align items vertically */
-  align-items: center; /* Center align items horizontally */
-  justify-content: center; /* Center align items vertically */
-  flex-grow: 1; /* Allow the content to grow */
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
 }
 
 .cta-button {
@@ -98,9 +97,19 @@ body {
   text-align: center;
   padding: 20px;
   background: rgba(0, 0, 0, 0.5);
-  position: relative; /* Keep footer above the overlay */
-  z-index: 2; /* Ensure it is above the overlay */
+  position: relative;
+  z-index: 2;
   text-decoration: none;
+}
+
+.therapist-link{
+  text-decoration: none;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.s;
 }
 
 .head {
