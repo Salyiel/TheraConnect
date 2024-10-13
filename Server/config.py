@@ -1,12 +1,12 @@
+from dotenv import load_dotenv
 import os
-from datetime import timedelta
 
-# Base configuration
+load_dotenv()  # Load variables from .env
+
 class Config:
-    """Base config class with default settings"""
-    SECRET_KEY = os.environ.get("SECRET_KEY", "supersecretkey")
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "jwt-secret-string")  # JWT for secure API
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)  # 
-    DEBUG = False
-    TESTING = False
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+    TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+    TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+    TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
