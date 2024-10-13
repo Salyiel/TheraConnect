@@ -22,10 +22,8 @@ def send_sms(to, body):
         
         return message.sid
     except TwilioException as e:
-        # Handle Twilio-specific errors
         current_app.logger.error(f"Twilio error: {str(e)}")
         return None
     except Exception as e:
-        # Handle general exceptions
         current_app.logger.error(f"Error sending SMS: {str(e)}")
         return None

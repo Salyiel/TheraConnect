@@ -2,10 +2,21 @@ from flask import Blueprint, request, jsonify, session
 from models import User
 from app import db
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
-from otp_service import send_otp, verify_otp
+from otp_service import send_otp, verify_otp  # import the otp_service
 from werkzeug.security import generate_password_hash, check_password_hash
+import random
 
 auth = Blueprint('auth', __name__)
+
+# Send OTP function
+def send_otp(phone_number):
+    otp_code = str(random.randint(100000, 999999))  # 6-digit OTP code
+    body = f"Your OTP code is {otp_code}"
+    
+    # Send the OTP via SMS
+    send_sms(phone_number, body)
+    
+    return otp_code
 
 @auth.route('/register', methods=['POST'])
 def register():
@@ -22,7 +33,13 @@ def register():
     new_user.password = generate_password_hash(data['password'], method='sha256')
     db.session.add(new_user)
     db.session.commit()
-    return jsonify(new_user.to_dict()), 201
+
+    # Send OTP after registration
+    otp = send_otp(new_user.phone)
+    session['otp'] = otp  # Store OTP in session for later verification
+    session['user_id'] = new_user.id
+
+    return jsonify({"message": "User registered. OTP sent for verification."}), 201
 
 @auth.route('/login', methods=['POST'])
 def login():
@@ -34,41 +51,7 @@ def login():
 
     # Send OTP to user's phone
     otp = send_otp(user.phone)
-    session['otp'] = otp  # Store the OTP in session for later verification
+    session['otp'] = otp  # Store OTP in session for later verification
     session['user_id'] = user.id
 
     return jsonify({"message": "OTP sent. Please verify."}), 200
-
-@auth.route('/verify-otp', methods=['POST'])
-def verify_otp_route():
-    data = request.json
-    session_otp = session.get('otp')
-    session_user_id = session.get('user_id')
-
-    if verify_otp(data['otp'], session_otp):
-        user = User.query.get(session_user_id)
-        access_token = create_access_token(identity={'id': user.id, 'otp_verified': True})
-        refresh_token = create_refresh_token(identity=user.id)
-        
-        # Clear session after OTP verification
-        session.pop('otp', None)
-        session.pop('user_id', None)
-
-        return jsonify({
-            'access_token': access_token,
-            'refresh_token': refresh_token,
-            'user': user.to_dict()
-        }), 200
-
-    return jsonify({"error": "Invalid OTP"}), 400
-
-# Protected route example
-@auth.route('/protected', methods=['GET'])
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-
-    if not current_user.get('otp_verified'):
-        return jsonify({"error": "OTP verification required"}), 403
-
-    return jsonify({"message": "Access to protected resource granted"}), 200
