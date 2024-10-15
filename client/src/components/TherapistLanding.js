@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/TherapistLanding.css";
+import "../styles/ClientLanding.css";
+import firstImage from "../images/istockphoto-1435001168-612x612.jpg";
 
 const TherapistLanding = () => {
   return (
-    <div className="landing-page therapist-landing">
+    <div className="landing-page client-landing">
       <header className="navbar">
         <div className="logo">
           <h1>Theraconnect</h1>
@@ -19,15 +20,20 @@ const TherapistLanding = () => {
       </header>
 
       <div className="content">
-        <h2>Join Our Community of Therapists!</h2>
-        <p>Help others on their journey to mental well-being. Sign up today and connect with clients who need your expertise.</p>
-        <Link to="/signup" className="cta-button">Sign Up Now</Link>
+        <img src={firstImage} alt="Therapist" />
+        <h1 className="head">Connect with a Client Today!</h1>
+        <p className="message">
+            Help others on their journey to mental well-being.
+            Sign up today and connect with clients who need your expertise.
+        </p>
+        <ul className="button">
+            <li><Link to='/login' className="cta-button">Log In</Link></li>
+            <li><Link to="/signup?role=therapist" className="cta-button">Sign Up Now</Link></li>
+        </ul>
       </div>
-      <div className="floating-image">
-        <img src="path/to/therapist-image.png" alt="Therapist illustration" />
-      </div>
+
       <footer className="footer">
-        <p>Looking for a client? <Link to="/client-landing">Switch to Client</Link></p>
+        <p>Are you looking foa a therapist? Switch to <Link to="/client-landing" className="therapist-link">Client</Link> </p>
       </footer>
     </div>
   );

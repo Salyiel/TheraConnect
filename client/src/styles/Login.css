@@ -115,6 +115,41 @@ body, html {
   border-radius: 5px;
 }
 
+/* Style for OTP section */
+.otp-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.otp-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.request-otp-btn {
+  background-color: #1D976C;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.request-otp-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.request-otp-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+
 .signup-text {
   margin-top: 15px;
   font-size: 14px;

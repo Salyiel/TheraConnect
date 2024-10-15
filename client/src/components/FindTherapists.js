@@ -10,10 +10,10 @@ const FindTherapists = () => {
           <span className="thera">Thera</span><span className="connect">connect</span>
         </div>
         <nav>
-          <a href="#">About</a>
-          <a href="#">Services</a>
-          <a href="#">Mental Health Resources</a>
-          <a href="#" className="highlight-button">How it works</a>
+          <a href=".">About</a>
+          <a href=".">Services</a>
+          <a href=".">Mental Health Resources</a>
+          <a href="." className="highlight-button">How it works</a>
         </nav>
       </header>
 
@@ -45,7 +45,7 @@ const FindTherapists = () => {
           <p className="qualification">Licensed Psychologist</p>
           <p>Over 15 years experience as a Clinical psychologist.</p>
           <p className="location">Nairobi, Kenya</p>
-          <a href="#" className="profile-link">see full profile</a>
+          <a href="." className="profile-link">see full profile</a>
         </div>
         <div className="therapist-card">
           <div className="therapist-image"></div>
@@ -53,7 +53,7 @@ const FindTherapists = () => {
           <p className="qualification">Qualification</p>
           <p>Short Description</p>
           <p className="location">City, Country</p>
-          <a href="#" className="profile-link">see full profile</a>
+          <a href="." className="profile-link">see full profile</a>
         </div>
         <div className="therapist-card">
           <div className="therapist-image"></div>
@@ -61,19 +61,19 @@ const FindTherapists = () => {
           <p className="qualification">Qualification</p>
           <p>Short Description</p>
           <p className="location">City, Country</p>
-          <a href="#" className="profile-link">see full profile</a>
+          <a href="." className="profile-link">see full profile</a>
         </div>
       </div>
 
       {/* Pagination */}
       <div className="pagination">
-        <a href="#">← Previous</a>
+        <a href=".">← Previous</a>
         <span className="current-page">1</span>
-        <a href="#">2</a>
-        <a href="#">3</a>
+        <a href=".">2</a>
+        <a href=".">3</a>
         <span>...</span>
-        <a href="#">67</a>
-        <a href="#">Next →</a>
+        <a href=".">67</a>
+        <a href=".">Next →</a>
       </div>
 
       {/* Footer Disclaimer */}

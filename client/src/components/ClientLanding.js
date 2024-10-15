@@ -14,7 +14,7 @@ const ClientLanding = () => {
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/login">Login</Link></li>
-            <li><Link to="/signup">Sign Up</Link></li>
+            <li><Link to="/signup?role=client">Sign Up</Link></li>
           </ul>
         </nav>
       </header>
@@ -28,7 +28,7 @@ const ClientLanding = () => {
         </p>
         <ul className="button">
             <li><Link to='/login' className="cta-button">Log In</Link></li>
-            <li><Link to="/signup" className="cta-button">Sign Up Now</Link></li>
+            <li><Link to="/signup?role=client" className="cta-button">Sign Up Now</Link></li>
         </ul>
       </div>
 

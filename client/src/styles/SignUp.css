@@ -75,3 +75,22 @@ body, html {
   color: #1D976C;
   text-decoration: none;
 }
+
+.password-input {
+  position: relative;
+}
+
+.password-input input {
+  padding-right: 30px; /* Add some padding to make space for the icon */
+}
+
+.password-input svg {
+  position: absolute;
+  right: 10px; /* Adjust this based on your input styling */
+  top: 50%;
+  transform: translateY(-50%); /* Center the icon vertically */
+}
+
+.location {
+  padding: 10px;
+}
