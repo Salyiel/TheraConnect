@@ -1,0 +1,106 @@
+.connect {
+    color: #0f1717; /* Dark color for 'Connect' */
+}
+
+.theraconnectTxt {
+    line-break: anywhere;
+    width: 100%;
+}
+
+.theraconnect1 {
+    position: absolute;
+    top: 2px;
+    left: 10px;
+    line-height: 21px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    width: 226px;
+    height: 58px;
+}
+
+.theraconnect {
+    position: absolute;
+    top: 0px;
+    left: 12px;
+    width: 252px;
+    height: 60px;
+    overflow: hidden;
+    font-size: 26px;
+    color: #2b847a; /* Use your primary color for the header text */
+}
+
+.logout1 {
+    position: absolute;
+    top: 12px;
+    left: 22px;
+    line-height: 21px;
+    font-weight: 600;
+    display: inline-block;
+    width: 130px;
+    height: 34px;
+    color: #2b847a; /* Change logout text color */
+}
+
+.powerIcon {
+    position: absolute;
+    top: 12px;
+    left: 22px;
+    width: 24px;
+    height: 24px;
+    overflow: hidden;
+}
+
+.logout {
+    position: absolute;
+    top: 6px;
+    left: 950px; /* Adjust if needed */
+    width: 178px;
+    height: 60px;
+    overflow: hidden;
+}
+
+.notifications1 {
+    position: absolute;
+    top: 12px;
+    left: 24px;
+    line-height: 21px;
+    font-weight: 600;
+    display: inline-block;
+    width: 130px;
+    height: 34px;
+    color: #2b847a; /* Change notifications text color */
+}
+
+.notificationsIcon {
+    position: absolute;
+    top: 12px;
+    left: 0px;
+    width: 24px;
+    height: 24px;
+    overflow: hidden;
+}
+
+.notifications {
+    position: absolute;
+    top: 5px;
+    left: 760px; /* Adjust if needed */
+    background-color: #ffffff; /* White background */
+    width: 178px;
+    height: 60px;
+    overflow: hidden;
+}
+
+.header {
+    width: 100%;
+    position: relative;
+    background-color: #ffffff; /* White background */
+    border: 1px solid #fff; /* Ensure border matches background */
+    box-sizing: border-box;
+    height: 65px;
+    overflow: hidden;
+    text-align: center;
+    font-size: 20px;
+    color: #2b847a; /* Use your primary color for header text */
+    font-family: 'Plus Jakarta Sans', sans-serif; /* Ensure font-family is defined */
+}

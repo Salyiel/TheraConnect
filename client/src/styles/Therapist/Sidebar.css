@@ -1,0 +1,41 @@
+/* Sidebar.css */
+
+.sidebarParent {
+    width: 220px; /* Adjusted width for better alignment */
+    height: calc(100vh - 65px); /* Full height minus header height */
+    background-color: #3e8e85; /* Sidebar background color */
+    color: #ffffff; /* Text color */
+    font-family: 'Plus Jakarta Sans', sans-serif; /* Font family */
+    position: fixed; /* Fixed position for sidebar */
+    top: 85px; /* Slightly increased from 80px to 85px for more space below header */
+    left: 0; /* Align to left */
+    overflow-y: auto; /* Allow vertical scrolling if content overflows */
+    padding-top: 20px; /* Added padding at the top for spacing */
+}
+
+.dashboardWrapper {
+    background-color: #3e8e85; /* Change this to match the sidebar */
+    padding: 20px; /* Add some padding */
+    text-align: center; /* Center the text */
+}
+
+.sidebarLink {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center items vertically */
+    text-decoration: none; /* Remove underline from links */
+    color: #ffffff; /* Text color */
+    padding: 15px; /* Add padding around links */
+    transition: background-color 0.3s; /* Smooth transition for hover */
+}
+
+.sidebarLink:hover {
+    background-color: #e4f2f2; /* Change background on hover */
+}
+
+.profileParent,
+.appointmentsParent,
+.messagesParent,
+.videocamParent,
+.resourcesParent {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Add a separator line */
+}

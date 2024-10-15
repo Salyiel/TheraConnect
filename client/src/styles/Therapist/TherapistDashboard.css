@@ -1,0 +1,15 @@
+/* src/styles/Therapist/TherapistDashboard.css */
+.dashboard {
+    display: flex;
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #f9f9f9; /* Ensure there's a background color */
+  }
+  
+  .header, .sidebar {
+    padding: 10px;
+  }
+  
