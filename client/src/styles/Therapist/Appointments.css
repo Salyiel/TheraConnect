@@ -1,0 +1,110 @@
+.appointments-container {
+    width: 70%; /* Limit width for better readability */
+    margin: 70px auto; /* Center container */
+    padding: 30px; /* Padding for the main container */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    background-color: #ffffff; /* White background */
+}
+
+.appointments-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    padding: 12px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 300px; /* Increased width for better visibility */
+}
+
+.schedule-btn {
+    padding: 12px 20px;
+    background-color: #00d1b2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+.schedule-btn:hover {
+    background-color: #00b29c;
+}
+
+.appointments-section {
+    margin-bottom: 30px;
+    padding: 20px; /* Added padding */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+.today-appointment {
+    color: red;
+    font-weight: bold; /* Emphasize today's appointment */
+}
+
+.hover-row:hover {
+    background-color: #f0f8ff; /* Light blue background on hover */
+}
+
+.action-btn {
+    padding: 10px 15px; /* Consistent button size */
+    background-color: #00d1b2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s; /* Smooth transition */
+    margin-right: 10px; /* Add space between buttons */
+}
+
+.action-btn:last-child {
+    margin-right: 0; /* Remove margin from the last button */
+}
+
+.action-btn:hover {
+    background-color: #00b29c;
+}
+
+.view-all-btn {
+    display: block;
+    margin: 10px auto;
+    background-color: #00d1b2;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+.view-all-btn:hover {
+    background-color: #00b29c;
+}
+
+
