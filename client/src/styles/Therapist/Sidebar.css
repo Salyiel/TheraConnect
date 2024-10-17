@@ -1,6 +1,6 @@
 /* Sidebar.css */
 
-.sidebarParent {
+.sidebar {
     width: 220px; /* Adjusted width for better alignment */
     height: calc(100vh - 65px); /* Full height minus header height */
     background-color: #3e8e85; /* Sidebar background color */
@@ -14,22 +14,23 @@
 }
 
 .dashboardWrapper {
-    background-color: #3e8e85; /* Change this to match the sidebar */
-    padding: 20px; /* Add some padding */
+    background-color: #3e8e85; /* Same as sidebar background */
+    padding: 20px; /* Add padding for the dashboard */
     text-align: center; /* Center the text */
 }
 
 .sidebarLink {
-    display: flex; /* Use flexbox for alignment */
-    align-items: center; /* Center items vertically */
+    display: flex; /* Flexbox for alignment */
+    align-items: center; /* Vertically align items */
     text-decoration: none; /* Remove underline from links */
-    color: #ffffff; /* Text color */
-    padding: 15px; /* Add padding around links */
-    transition: background-color 0.3s; /* Smooth transition for hover */
+    color: #ffffff; /* White text color */
+    padding: 15px; /* Padding around links for spacing */
+    margin-bottom: 10px; /* Add space between links */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
 .sidebarLink:hover {
-    background-color: #e4f2f2; /* Change background on hover */
+    background-color: #e4f2f2; /* Light background color on hover */
 }
 
 .profileParent,
@@ -37,5 +38,14 @@
 .messagesParent,
 .videocamParent,
 .resourcesParent {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Add a separator line */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Separator line for each item */
+}
+
+/* Additional spacing */
+.profileParent,
+.appointmentsParent,
+.messagesParent,
+.videocamParent,
+.resourcesParent {
+    margin-bottom: 15px; /* Add spacing between sidebar items */
 }

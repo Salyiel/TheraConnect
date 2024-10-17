@@ -1,0 +1,94 @@
+/* src/styles/Therapist/Profile.css */
+
+.profile-section {
+  display: flex;
+  justify-content: center;
+  padding: 100px;
+  margin-left: 200px; /* Align with the sidebar */
+}
+
+.profile-container {
+  background-color: white;
+  padding: 30px; /* Increased padding for a more spacious look */
+  width: 60%; /* Ensures it’s centered with some width */
+  border-radius: 10px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); /* Softer shadow for depth */
+  display: flex;
+  align-items: center; /* Center items vertically */
+}
+
+.profile-photo {
+  flex: 0 0 150px; /* Fixed image size */
+  margin-right: 30px; /* Increased margin for better spacing */
+  text-align: center;
+}
+
+.photo-frame {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #00D1B2; /* Your theme color */
+  transition: transform 0.3s; /* Smooth scaling on hover */
+}
+
+.photo-frame:hover {
+  transform: scale(1.05); /* Slightly enlarges the photo frame on hover */
+}
+
+.photo-upload {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666; /* Subtle text color for the upload text */
+}
+
+.profile-info {
+  flex-grow: 1;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+  color: #333; /* Darker text for better readability */
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px; /* Slightly larger padding */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: border-color 0.3s; /* Smooth border color transition */
+}
+
+.input-group input:focus {
+  border-color: #00D1B2; /* Change border color on focus */
+  outline: none; /* Remove default outline */
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.edit-button,
+.save-button {
+  padding: 10px 25px; /* Increased padding for buttons */
+  background-color: #00D1B2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold; /* Bold text for buttons */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transition */
+}
+
+.edit-button:hover,
+.save-button:hover {
+  background-color: #00a395; /* Darker shade on hover */
+  transform: translateY(-2px); /* Slight lift effect on hover */
+}

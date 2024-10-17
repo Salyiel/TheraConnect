@@ -1,0 +1,136 @@
+/* src/styles/Therapist/Dashboard.css */
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center contents horizontally */
+  margin: 20px auto; /* Center on the page with margin on top/bottom */
+  max-width: 1000px; /* Set a max width to limit size */
+  padding: 20px; /* Add padding around the content */
+  background-color: #f9f9f9; /* Light background color */
+  border-radius: 10px; /* Rounded corners for the container */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.greeting-section {
+  display: flex;
+  align-items: center; /* Center items vertically */
+  margin-bottom: 20px; /* Space below */
+}
+
+.profile-photo img {
+  border-radius: 50%; /* Circular profile picture */
+  width: 60px; /* Adjust size as needed */
+  height: 60px; /* Adjust size as needed */
+  margin-left: 10px; /* Space between text and image */
+}
+
+.highlights {
+  display: flex;
+  justify-content: space-around; /* Space out highlights */
+  width: 100%; /* Full width */
+  margin-bottom: 20px; /* Space below */
+}
+
+.highlight-box {
+  background: #ffffff; /* White background for boxes */
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center; /* Center text */
+  flex: 1; /* Equal space for each box */
+  margin: 0 10px; /* Space between boxes */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.3s; /* Animation on hover */
+}
+
+.highlight-box:hover {
+  transform: translateY(-3px); /* Lift effect on hover */
+}
+
+.todays-appointments {
+  width: 100%; /* Full width */
+  margin-bottom: 20px; /* Space below */
+}
+
+.appointment-card {
+  display: flex;
+  justify-content: space-between; /* Space out appointment info */
+  background: #ffffff;
+  padding: 15px; /* Increased padding for comfort */
+  border: 1px solid #ccc; /* Border for appointments */
+  border-radius: 5px; /* Rounded corners */
+  margin-bottom: 10px; /* Space between cards */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+}
+
+.appointment-actions button {
+  margin-left: 10px; /* Space between buttons */
+  background: #00D1B2; /* Theme color for buttons */
+  border: none; /* Remove default border */
+  color: white; /* White text */
+  padding: 8px 12px; /* Padding for buttons */
+  border-radius: 5px; /* Rounded corners for buttons */
+  cursor: pointer; /* Pointer cursor */
+}
+
+.appointment-actions button:hover {
+  background: #009b8a; /* Darker shade on hover */
+}
+
+/* src/styles/Therapist/Dashboard.css */
+
+
+
+/* Calendar Section */
+.calendar-section {
+  display: flex; /* Use flexbox for alignment */
+  justify-content: flex-end; /* Align the calendar to the right */
+  margin-top: 20px; /* Space above */
+  width: 100%; /* Full width for calendar section */
+}
+
+/* Calendar Container */
+.calendar {
+  background: #ffffff; /* White background for the calendar */
+  border-radius: 10px; /* Rounded corners for the calendar */
+  padding: 20px; /* Padding around the calendar */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Styling for the react-calendar */
+.react-calendar {
+  border: none; /* Remove default border */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Navigation buttons styles */
+.react-calendar__navigation button {
+  background: transparent; /* Remove default button background */
+  color: #00D1B2; /* Navigation button color */
+  font-size: 1.5rem; /* Increase font size */
+  cursor: pointer; /* Pointer cursor */
+  transition: background-color 0.2s; /* Transition effect */
+}
+
+.react-calendar__navigation button:enabled:hover {
+  background-color: rgba(0, 209, 178, 0.1); /* Hover effect */
+}
+
+/* Current time display */
+.current-time {
+  font-size: 1.2rem; /* Font size for current time */
+  color: #00D1B2; /* Current time color */
+  margin-bottom: 15px; /* Space below current time */
+}
+
+/* No heading for calendar */
+.calendar-heading {
+  display: none; /* Hide heading */
+}
+
+
+.no-appointments {
+  text-align: center; /* Center the message */
+  color: #888; /* Gray color for no appointments message */
+  font-style: italic; /* Italicize for emphasis */
+}
