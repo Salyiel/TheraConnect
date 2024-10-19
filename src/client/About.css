@@ -1,0 +1,25 @@
+.about-section {
+    background-color: #0D4D4D; /* Dark teal for background */
+    padding: 3rem 1.5rem;
+  }
+  
+  .about-section h2 {
+    color: #ffffff; /* White color for the heading */
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .about-section p {
+    color: #D1FAE5; /* Light teal color for paragraphs */
+    font-size: 1.125rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .about-section .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
