@@ -1,0 +1,141 @@
+/* ClientPage.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+  }
+  
+  .ClientPage {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  header {
+    background-color: #004d4d;
+    color: white;
+    padding: 16px;
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header-content h2 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .header-content h2 span {
+    color: #1e9c8b; /* Accent color for "connect" */
+  }
+  
+  header nav button {
+    background-color: #1e9c8b;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-left: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  header nav button:hover {
+    background-color: #167a6e; /* Darker shade on hover */
+  }
+  
+  main {
+    flex: 1;
+    padding: 16px;
+  }
+  
+  main h1 {
+    font-size: 28px;
+    color: #004d4d;
+    margin-bottom: 24px;
+  }
+  
+  section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .SessionCard, .TherapistCard, .NotesCard,
+  .ResourcesCard, .AppointmentCard, .SupportCard {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    text-align: center;
+  }
+  
+  .SessionCard h3, .TherapistCard h3, .NotesCard h3,
+  .ResourcesCard h3, .AppointmentCard h3, .SupportCard h3 {
+    font-size: 18px;
+    color: #004d4d;
+    margin-bottom: 12px;
+  }
+  
+  .SessionCard p, .TherapistCard p, .NotesCard img,
+  .ResourcesCard p, .AppointmentCard p, .SupportCard p {
+    color: #666;
+  }
+  
+  .therapist-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  
+  .therapist-info img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+  }
+  
+  .contact-info {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .contact-info p {
+    margin: 4px 0;
+  }
+  
+  .SessionCard, .TherapistCard, .NotesCard,
+  .ResourcesCard, .AppointmentCard, .SupportCard {
+    transition: transform 0.2s;
+  }
+  
+  .SessionCard:hover, .TherapistCard:hover, .NotesCard:hover,
+  .ResourcesCard:hover, .AppointmentCard:hover, .SupportCard:hover {
+    transform: translateY(-5px);
+  }
+  
+  .NotesCard img {
+    width: 100%;
+    border-radius: 4px;
+  }
+  
+  button {
+    background-color: #1e9c8b;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #167a6e; /* Darker shade on hover */
+  }
