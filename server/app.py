@@ -31,9 +31,9 @@ bcrypt = Bcrypt(app)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'theraconnectteam@gmail.com'  # Replace with your email
-app.config['MAIL_PASSWORD'] = 'mlsj vhwr nmig dwpt'  # Replace with your email password
-app.config['MAIL_DEFAULT_SENDER'] = 'noreply@tc.com'  # Set default sender
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = 'noreply@tc.com'
 
 mail = Mail(app)
 
