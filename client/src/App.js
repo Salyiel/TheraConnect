@@ -15,6 +15,7 @@ import AboutUs from './components/AboutUs'
 import TherapistInfo from './components/TherapistInfo';
 import TherapistProfile from './components/TherapistProfile';
 import TherapistDashboard from './pages/TherapistDashboard';
+import AdminPage from './components/AdminPage';
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path="/therapist-info" element={<TherapistInfo />} />
           <Route path="/therapist-profile/:id" element={<TherapistProfile />} />
           <Route path="/therapist-dashboard" element={< TherapistDashboard />} />
+          <Route path="/adminpage" element={<AdminPage/>} />
         </Routes>
       </div>
     </Router>
