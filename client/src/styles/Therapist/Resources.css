@@ -1,0 +1,90 @@
+/* src/styles/Therapist/Resources.css */
+
+.resources-container {
+    display: flex; /* Flexbox to ensure proper layout with sidebar */
+    flex-direction: column; /* Ensure items are stacked vertically */
+    width: 70%; /* Adjust based on sidebar width */
+    margin: 80px auto; /* Center the content */
+    padding: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    position: relative; /* Prevent content from overlapping with the sidebar */
+}
+
+.resources-header {
+    text-align: center;
+    color: #00D1B2; /* Use theme color */
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.filter-select {
+    width: 100%; /* Full width of the parent container */
+    padding: 10px; /* Add some padding for better touch targets */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 5px; /* Rounded corners */
+    margin-top: 10px; /* Space above the input */
+    font-size: 16px; /* Adjust font size for better readability */
+}
+
+.resource-list {
+    margin-top: 20px;
+}
+
+.resource-item {
+    background-color: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resource-item h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #0f1717;
+}
+
+.resource-item p {
+    color: #528B85; /* Text color */
+}
+
+.resource-item a {
+    color: #00D1B2; /* Link color matching theme */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.resource-item a:hover {
+    color: #009b8a; /* Darker hover effect */
+}
+
+.upload-form input {
+    width: 100%; /* Full width of the parent container */
+    padding: 10px; /* Add some padding for comfort */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 5px; /* Rounded corners */
+    margin-bottom: 15px; /* Space below each input field */
+    font-size: 16px; /* Adjust font size for readability */
+}
+
+.add-resource-btn {
+    background-color: #00D1B2;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto; /* Center the button */
+    width: 60%; /* Full width button */
+}
+
+.add-resource-btn:hover {
+    background-color: #009b8a; /* Darker shade on hover */
+}
