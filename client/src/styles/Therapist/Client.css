@@ -1,0 +1,111 @@
+/* src/styles/Therapist/Client.css */
+
+.client-container {
+    width: 70%; /* Limit width for better readability */
+    margin: 80px auto; /* Center container */
+    padding: 30px; /* Padding for the main container */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    background-color: #ffffff; /* White background */
+}
+
+.search-filter {
+    display: flex; /* Flexbox for alignment */
+    justify-content: space-between; /* Space out items */
+    align-items: center; /* Center items vertically */
+    margin-bottom: 20px; /* Space below */
+}
+
+.search-input {
+    padding: 10px; /* Padding for input */
+    border: 1px solid #ccc; /* Border for input */
+    border-radius: 5px; /* Rounded corners */
+    width: 30%; /* Adjust width as needed */
+}
+
+.filter-btn {
+    background-color: #00D1B2; /* Theme color for filter */
+    color: white; /* White text */
+    padding: 10px 15px; /* Padding for button */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+}
+
+.add-client-btn {
+    background-color: #00D1B2; /* Theme color */
+    color: white; /* White text */
+    padding: 10px 15px; /* Padding for button */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+}
+
+.add-client-btn:hover,
+.filter-btn:hover {
+    background-color: #009b8a; /* Darker shade on hover */
+}
+
+/* Client List Table Styles */
+.client-list {
+    margin-top: 20px; /* Space above client list */
+}
+
+.client-table {
+    width: 100%; /* Full width for table */
+    border-collapse: collapse; /* Collapse borders */
+}
+
+.client-table th,
+.client-table td {
+    border: 1px solid #ccc; /* Border for cells */
+    padding: 10px; /* Padding for cells */
+    text-align: left; /* Left align text */
+}
+
+.client-table th {
+    background-color: #00D1B2; /* Header background color */
+    color: white; /* Header text color */
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed; /* Fixed positioning for modal */
+    top: 0; /* Align to top */
+    left: 0; /* Align to left */
+    right: 0; /* Align to right */
+    bottom: 0; /* Align to bottom */
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex; /* Flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+.modal-content {
+    background: white; /* White background for modal */
+    padding: 20px; /* Padding for modal */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    width: 400px; /* Set width for modal */
+}
+
+.modal-content input {
+    margin: 10px 0; /* Space above and below inputs */
+    padding: 10px; /* Padding for inputs */
+    border: 1px solid #ccc; /* Border for inputs */
+    border-radius: 5px; /* Rounded corners */
+    width: 100%; /* Full width for inputs */
+}
+
+.schedule-appointment-btn {
+    background-color: #00D1B2; /* Theme color */
+    color: white; /* White text */
+    padding: 10px 15px; /* Padding for button */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+}
+
+.schedule-appointment-btn:hover {
+    background-color: #009b8a; /* Darker shade on hover */
+}

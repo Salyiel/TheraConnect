@@ -1,106 +1,42 @@
-.connect {
-    color: #0f1717; /* Dark color for 'Connect' */
-}
-
-.theraconnectTxt {
-    line-break: anywhere;
-    width: 100%;
-}
-
-.theraconnect1 {
-    position: absolute;
-    top: 2px;
-    left: 10px;
-    line-height: 21px;
-    font-weight: 800;
+.header {
     display: flex;
-    align-items: center;
-    width: 226px;
-    height: 58px;
+    justify-content: space-between; /* Space between header items */
+    align-items: center; /* Center vertically */
+    padding: 40px; /* Add some padding */
+    background-color: #ffffff; /* White background */
+    border-bottom: 1px solid #ccc; /* Light bottom border */
+    box-sizing: border-box; /* Include padding in height/width calculations */
+    height: 65px; /* Fixed height */
 }
 
 .theraconnect {
-    position: absolute;
-    top: 0px;
-    left: 12px;
-    width: 252px;
-    height: 60px;
-    overflow: hidden;
-    font-size: 26px;
-    color: #2b847a; /* Use your primary color for the header text */
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center vertically */
 }
 
-.logout1 {
-    position: absolute;
-    top: 12px;
-    left: 22px;
-    line-height: 21px;
-    font-weight: 600;
-    display: inline-block;
-    width: 130px;
-    height: 34px;
-    color: #2b847a; /* Change logout text color */
+.theraconnect1 {
+    font-size: 26px; /* Font size for the header text */
+    font-weight: 800; /* Bold text */
+    color: #2b847a; /* Primary color for the header */
 }
 
-.powerIcon {
-    position: absolute;
-    top: 12px;
-    left: 22px;
-    width: 24px;
-    height: 24px;
-    overflow: hidden;
+.notifications, .logout {
+    cursor: pointer; /* Change cursor to pointer on hover */
+    color: #2b847a; /* Color for notifications and logout text */
+    padding: 5px 10px; /* Padding for clickable areas */
 }
 
-.logout {
-    position: absolute;
-    top: 6px;
-    left: 950px; /* Adjust if needed */
-    width: 178px;
-    height: 60px;
-    overflow: hidden;
+.notifications1, .logout1 {
+    font-size: 24px; /* Font size for the buttons */
 }
 
-.notifications1 {
-    position: absolute;
-    top: 12px;
-    left: 24px;
-    line-height: 21px;
-    font-weight: 600;
-    display: inline-block;
-    width: 130px;
-    height: 34px;
-    color: #2b847a; /* Change notifications text color */
-}
-
-.notificationsIcon {
-    position: absolute;
-    top: 12px;
-    left: 0px;
-    width: 24px;
-    height: 24px;
-    overflow: hidden;
-}
-
-.notifications {
-    position: absolute;
-    top: 5px;
-    left: 760px; /* Adjust if needed */
-    background-color: #ffffff; /* White background */
-    width: 178px;
-    height: 60px;
-    overflow: hidden;
-}
-
-.header {
-    width: 100%;
-    position: relative;
-    background-color: #ffffff; /* White background */
-    border: 1px solid #fff; /* Ensure border matches background */
-    box-sizing: border-box;
-    height: 65px;
-    overflow: hidden;
-    text-align: center;
-    font-size: 20px;
-    color: #2b847a; /* Use your primary color for header text */
-    font-family: 'Plus Jakarta Sans', sans-serif; /* Ensure font-family is defined */
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .theraconnect1 {
+        font-size: 20px; /* Smaller font size on smaller screens */
+    }
+    
+    .notifications, .logout {
+        font-size: 14px; /* Smaller font size for notifications and logout */
+    }
 }
