@@ -19,7 +19,6 @@ body, html {
   display: flex;
   justify-content: space-between;
   padding: 20px;
-  background-color: white;
 }
 
 .navbar .logo h1 {
@@ -33,13 +32,13 @@ body, html {
   display: flex;
   gap: 20px;
   align-items: center;
-  color: #fff;
+  color: #1D976C;
 }
 
 .nav-links li {
   font-size: 16px;
   cursor: pointer;
-  color: #fff;
+  color: #1D976C;
 }
 
 .find-therapist-btn {

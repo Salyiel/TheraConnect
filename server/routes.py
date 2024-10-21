@@ -393,7 +393,7 @@ def verify_otp():
         'id': user.id,
         'name': user.name,
         'email': user.email,
-        'is_verified': user.is_verified,
+        'therapist': user.therapist_id,
         'role': user.role
     }
 
@@ -983,7 +983,7 @@ def book_appointment():
     except pyjwt.ExpiredSignatureError:
         return jsonify({'error': 'Token has expired!'}), 401
     except pyjwt.InvalidTokenError:
-        return jsonify({'error': 'Invalid token!'}), 401
+        return jsonify({'error': 'Kindly Log In First!'}), 401
     except Exception as e:
         db.session.rollback()  # Roll back in case of error
         print("Error occurred:", e)  # Log the error for debugging
@@ -1017,3 +1017,64 @@ def get_appointments():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/set-primary-therapist', methods=['POST'])
+def set_primary_therapist():
+    client_id = request.json.get('client_id')
+    if not client_id:
+        return jsonify({"error": "Client ID is required"}), 400
+    therapist_id = request.json.get('therapist_id')
+    if not client_id:
+        return jsonify({"error": "Client ID is required"}), 400
+
+    print('id: ', therapist_id)
+
+    # Find the client by ID
+    client = User.query.get(client_id)
+    if client:
+        # Set the therapist as the primary therapist
+        client.therapist_id = therapist_id
+        db.session.commit()  # Commit the changes to the database
+        return jsonify({'message': 'Therapist set as primary successfully.'}), 200
+    else:
+        return jsonify({'error': 'Client not found.'}), 404
+
+
+@app.route('/api/therapist/<int:user_id>', methods=['GET'])
+def get_primary_therapist(user_id):
+    try:
+        # Query the User model to find the client associated with the provided user_id
+        client = User.query.get(user_id)
+
+        if not client:
+            return jsonify({'error': 'Client not found'}), 404
+
+        # Fetch the therapist based on therapist_id from the client record
+        therapist = User.query.get(client.therapist_id)  # Fetch the therapist by ID
+
+        print('therapist' , therapist)
+
+        if not therapist:
+            return jsonify({'message': 'No primary therapist assigned'}), 404
+
+        # Fetch the therapist's profile for additional information
+        therapist_profile = TherapistProfile.query.filter_by(user_id=therapist.id).first()
+
+        therapist_data = {
+            'id': therapist.id,
+            'name': therapist.name,
+            'email': therapist.email,
+            'phone': therapist.phone,
+            'qualifications': therapist_profile.qualifications if therapist_profile else None,
+            'specialties': therapist_profile.specialties if therapist_profile else None,
+            'experience_years': therapist_profile.experience_years if therapist_profile else None,
+            'image': therapist_profile.image if therapist_profile else None,
+            'bio': therapist_profile.bio if therapist_profile else None
+        }
+
+        return jsonify(therapist_data), 200
+
+    except Exception as e:
+        print("Error fetching primary therapist:", e)
+        return jsonify({'error': 'An error occurred while fetching the therapist'}), 500

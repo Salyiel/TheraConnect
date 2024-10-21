@@ -11,6 +11,8 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Track modal visibility
   const [isEditing, setIsEditing] = useState(false); // Track if a user is editing a note
   const [loading, setLoading] = useState(true); // To handle the loading state
+  const [therapist, setTherapist] = useState(null); // State to store therapist information
+
   const userName = sessionStorage.getItem('userName')
 
   const therapistPage = <Link className="find" to="/find-therapists">Change Therapist</Link>;
@@ -60,6 +62,28 @@ const Dashboard = () => {
 
     fetchAppointments();
   }, []); // Add any dependencies if necessary
+
+  useEffect(() => {
+    const fetchTherapist = async () => {
+      try {
+        const therapistId = sessionStorage.getItem('therapist'); // Retrieve user ID from sessionStorage
+        if (!therapistId) {
+          throw new Error('User ID is not available.');
+        }
+        const response = await axios.get(`${process.env.REACT_APP_FLASK_API_URL}/api/therapist/${therapistId}`);
+        if (response.status === 200) {
+          setTherapist(response.data); // Assuming the therapist data is returned correctly
+        } else {
+          console.error('Error fetching therapist:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching therapist:', error);
+      }
+    };
+  
+    fetchTherapist(); // Call the fetch function
+  }, []); // Run this effect only once when the component mounts
+  
 
   // Handle opening the modal to create a new note
   const openModalForNewNote = () => {
@@ -177,32 +201,41 @@ const Dashboard = () => {
       </div>
 
       <div className="dashboard-grid">
-      <div className="card">
-          <h3>My Sessions</h3>
-          {appointments.length === 0 ? (
-            <p>No current sessions</p>
-          ) : (
-            <ul className="appointments-list">
-              {appointments.map((appointment) => (
-                <li key={appointment.id}>
-                  <strong>Date:</strong> {appointment.date} <br />
-                  <strong>Time:</strong> {appointment.time} <br />
-                  <strong>Therapist:</strong> {appointment.therapist_name} <br />
-                  {/* Add other details if necessary */}
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="card">
+          <div className='my-sessions-card'>
+            <h3>My Sessions</h3>
+            {appointments.length === 0 ? (
+              <p>No current sessions</p>
+            ) : (
+              <ul className="appointments-list">
+                {appointments.map((appointment) => (
+                  <li key={appointment.id}>
+                    <strong>Date:</strong> {appointment.date} <br />
+                    <strong>Time:</strong> {appointment.time} <br />
+                    <strong>Therapist:</strong> {appointment.therapist_name} <br />
+                    {/* Add other details if necessary */}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         <div className="card">
           <h3>My Therapist</h3>
-          <p>Mr. Allan Njoroge</p>
-          <p>Masters in Social Psychology</p>
-          <p>7 years experience</p>
-          <p>Email: <a href="mailto:therapist@example.com">therapist@example.com</a></p>
-          <p>Phone: (123) 456-7890</p>
+          {therapist ? (
+            <>
+              <p>{therapist.name}</p>
+              <p>{therapist.qualification}</p>
+              <p>{therapist.experience} years experience</p>
+              <p>Email: <a href={`mailto:${therapist.email}`}>{therapist.email}</a></p>
+              <p>Phone: {therapist.phone}</p>
+            </>
+          ) : (
+            <p>No therapist assigned. Please select one.</p>
+          )}
         </div>
+
 
         {/* Notes Section */}
         <div className="card my-notes">
@@ -210,7 +243,7 @@ const Dashboard = () => {
           {notes.length === 0 ? (
             <p>No notes available. Click "New Note" to create one.</p>
           ) : (
-            <div className="notes-list-container"> {/* Wrap in a container for styling */} 
+            <div className="notes-list-container"> 
               <ul className="notes-list">
                 {notes.map((note, index) => (
                   <li key={index} onClick={() => openModalForEditing(note)}>
@@ -236,6 +269,8 @@ const Dashboard = () => {
         <div className="card">
           <h3>Book Appointment</h3>
           <p>Schedule an appointment now with your therapist.</p>
+          <Link className="find" to="/find-therapists">Schedule a session</Link>;
+
         </div>
 
         <div className="card">

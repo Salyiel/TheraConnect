@@ -15,6 +15,7 @@ const ClientLanding = () => {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/login">Login</Link></li>
             <li><Link to="/signup?role=client">Sign Up</Link></li>
+            <li><Link to="/about-us">About Us</Link></li>
           </ul>
         </nav>
       </header>
