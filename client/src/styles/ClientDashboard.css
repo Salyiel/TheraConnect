@@ -3,10 +3,9 @@
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
   }
   
-  body {
+  .dashboard-container {
     color: #333;
     background: url('../images/image\ 5.jpg') no-repeat center center fixed;
     background-size: cover;
@@ -100,6 +99,11 @@
   .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .my-sessions-card {
+    max-height: 210px;
+    overflow-y: auto;
   }
   
   .my-notes textarea {

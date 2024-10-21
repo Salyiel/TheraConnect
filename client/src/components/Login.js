@@ -76,6 +76,7 @@ const Login = () => {
         sessionStorage.setItem('userId', data.user.id);
         sessionStorage.setItem('userName', data.user.name);
         sessionStorage.setItem('userEmail', data.user.email);
+        sessionStorage.setItem('therapist', data.user.therapist)
   
         // Check if user is a therapist and their verification status
         if (data.user.role === 'therapist') {

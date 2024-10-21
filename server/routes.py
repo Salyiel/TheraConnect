@@ -393,7 +393,7 @@ def verify_otp():
         'id': user.id,
         'name': user.name,
         'email': user.email,
-        'is_verified': user.is_verified,
+        'therapist': user.therapist_id,
         'role': user.role
     }
 
@@ -983,7 +983,7 @@ def book_appointment():
     except pyjwt.ExpiredSignatureError:
         return jsonify({'error': 'Token has expired!'}), 401
     except pyjwt.InvalidTokenError:
-        return jsonify({'error': 'Invalid token!'}), 401
+        return jsonify({'error': 'Kindly Log In First!'}), 401
     except Exception as e:
         db.session.rollback()  # Roll back in case of error
         print("Error occurred:", e)  # Log the error for debugging
@@ -1018,165 +1018,64 @@ def get_appointments():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-# *ADMIN PAGE*
-
-# Routes for Approving/Disapproving Therapists
-@app.route('/therapist/<int:id>/approve', methods=['POST'])
-@jwt_required()
-def approve_therapist(id):
-    therapist = therapist.query.get(id)
-    if not therapist:
-        return jsonify({"msg": "Therapist not found"}), 404
-    
-    # Send approval email
-    msg = Message("Approval Notification", recipients=[therapist.contact])  # therapist.contact holds the email
-    msg.body = f"Dear {therapist.name},\n\nYour request has been approved. You can now provide services on our platform.\n\nThank you,\nTheraConnect"
-    mail.send(msg)
-    
-    # Update database or perform other approval actions
-    return jsonify({"msg": f"Therapist {therapist.name} approved and email sent"})
 
 
-@app.route('/therapist/<int:id>/disapprove', methods=['POST'])
-@jwt_required()
-def disapprove_therapist(id):
-    therapist = therapist.query.get(id)
-    if not therapist:
-        return jsonify({"msg": "Therapist not found"}), 404
-    
-    # Get reason for disapproval from request body
-    data = request.json
-    reason = data.get('reason', 'No reason provided')
+@app.route('/api/set-primary-therapist', methods=['POST'])
+def set_primary_therapist():
+    client_id = request.json.get('client_id')
+    if not client_id:
+        return jsonify({"error": "Client ID is required"}), 400
+    therapist_id = request.json.get('therapist_id')
+    if not client_id:
+        return jsonify({"error": "Client ID is required"}), 400
 
-    # Send disapproval email
-    msg = Message("Disapproval Notification", recipients=[therapist.contact])
-    msg.body = f"Dear {therapist.name},\n\nUnfortunately, your request has been disapproved for the following reason:\n{reason}\n\nThank you,\nTheraConnect"
-    mail.send(msg)
+    print('id: ', therapist_id)
 
-    # Update database or perform other disapproval actions
-    return jsonify({"msg": f"Therapist {therapist.name} disapproved and email sent"})
-
-@app.route('/api/announcements', methods=['POST'])
-@jwt_required()
-def send_announcement():
-    data = request.json
-    message = data['message']
-    recipient = data['recipient']
-
-    # Logic to send announcement to therapists or clients
-    if recipient == 'therapists':
-        # Send announcement to all therapists
-        pass
-    elif recipient == 'clients':
-        # Send announcement to all clients
-        pass
-
-    return jsonify({"msg": "Announcement sent"}), 200
+    # Find the client by ID
+    client = User.query.get(client_id)
+    if client:
+        # Set the therapist as the primary therapist
+        client.therapist_id = therapist_id
+        db.session.commit()  # Commit the changes to the database
+        return jsonify({'message': 'Therapist set as primary successfully.'}), 200
+    else:
+        return jsonify({'error': 'Client not found.'}), 404
 
 
-@app.route('/api/statistics', methods=['GET'])
-@jwt_required()
-def get_statistics():
-    therapist_count = TherapistProfile.query.count()
-    client_count = User.query.count()
-    return jsonify({
-        "therapists": therapist_count,
-        "clients": client_count
-    })
+@app.route('/api/therapist/<int:user_id>', methods=['GET'])
+def get_primary_therapist(user_id):
+    try:
+        # Query the User model to find the client associated with the provided user_id
+        client = User.query.get(user_id)
 
+        if not client:
+            return jsonify({'error': 'Client not found'}), 404
 
-# **Therapiss Page**
-# Route to fetch therapist dashboard data
-@app.route('/api/therapist/dashboard/<int:therapist_id>', methods=['GET'])
-def get_therapist_dashboard(therapist_id):
-    therapist = therapist.query.get_or_404(therapist_id)
+        # Fetch the therapist based on therapist_id from the client record
+        therapist = User.query.get(client.therapist_id)  # Fetch the therapist by ID
 
-    # Total clients and pending requests are just examples based on the model structure
-    total_clients = therapist.total_clients
-    upcoming_appointments = Appointment.query.filter_by(therapist_id=therapist_id, date=datetime.today().date()).count()
-    pending_requests = Appointment.query.filter_by(therapist_id=therapist_id, status='pending').count()
+        print('therapist' , therapist)
 
-    # Return data as JSON
-    return jsonify({
-        'name': therapist.name,
-        'profile_photo': therapist.profile_photo,
-        'total_clients': total_clients,
-        'upcoming_appointments': upcoming_appointments,
-        'pending_requests': pending_requests
-    })
+        if not therapist:
+            return jsonify({'message': 'No primary therapist assigned'}), 404
 
-# Route to fetch today's appointments for a therapist
-@app.route('/api/therapist/<int:therapist_id>/appointments/today', methods=['GET'])
-def get_todays_appointments(therapist_id):
-    today = datetime.today().date()
-    appointments = Appointment.query.filter_by(therapist_id=therapist_id, date=today).all()
+        # Fetch the therapist's profile for additional information
+        therapist_profile = TherapistProfile.query.filter_by(user_id=therapist.id).first()
 
-    appointments_list = [{
-        'time': appointment.time.strftime('%I:%M %p'),
-        'name': appointment.client_name,
-        'service': appointment.service
-    } for appointment in appointments]
+        therapist_data = {
+            'id': therapist.id,
+            'name': therapist.name,
+            'email': therapist.email,
+            'phone': therapist.phone,
+            'qualifications': therapist_profile.qualifications if therapist_profile else None,
+            'specialties': therapist_profile.specialties if therapist_profile else None,
+            'experience_years': therapist_profile.experience_years if therapist_profile else None,
+            'image': therapist_profile.image if therapist_profile else None,
+            'bio': therapist_profile.bio if therapist_profile else None
+        }
 
-    return jsonify(appointments_list)
+        return jsonify(therapist_data), 200
 
-# Route to initiate a call or video session (simplified for demo purposes)
-@app.route('/api/therapist/call', methods=['POST'])
-def initiate_call():
-    data = request.get_json()
-    client_name = data.get('name')
-    # Here, you would initiate a call using an API like Twilio, etc.
-    return jsonify({'message': f'Calling {client_name}...'}), 200
-
-@app.route('/api/therapist/video', methods=['POST'])
-def initiate_video():
-    data = request.get_json()
-    client_name = data.get('name')
-    # For demo, this just opens Google Meet. You can replace it with actual video call integration.
-    return jsonify({'message': f'Starting video session with {client_name}...'}), 200
-
-
-# Route to add a new client
-@app.route('/api/clients', methods=['POST'])
-def add_client():
-    data = request.get_json()
-    new_client = User(
-        name=data['name'],
-        last_visit=datetime.strptime(data['lastVisit'], '%Y-%m-%d') if data['lastVisit'] else None,
-        condition=data['condition'],
-        phone=data['phone'],
-        email=data['email']
-    )
-    db.session.add(new_client)
-    db.session.commit()
-    return jsonify({'message': 'Client added successfully!'}), 201
-
-# Route to get all clients
-@app.route('/api/clients', methods=['GET'])
-def get_clients():
-    clients = User.query.all()
-    clients_list = [{
-        'id': client.id,
-        'name': client.name,
-        'lastVisit': client.last_visit.strftime('%Y-%m-%d') if client.last_visit else '',
-        'condition': client.condition,
-        'phone': client.phone,
-        'email': client.email
-    } for client in clients]
-    return jsonify(clients_list)
-
-# Route to schedule an appointment for a client
-@app.route('/api/clients/<int:client_id>/appointments', methods=['POST'])
-def schedule_appointment(client_id):
-    data = request.get_json()
-    new_appointment = Appointment(
-        client_id=client_id,
-        appointment_date=datetime.strptime(data['appointmentDate'], '%Y-%m-%d')
-    )
-    db.session.add(new_appointment)
-    db.session.commit()
-    return jsonify({'message': f'Appointment scheduled for client {client_id}'}), 201
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
+    except Exception as e:
+        print("Error fetching primary therapist:", e)
+        return jsonify({'error': 'An error occurred while fetching the therapist'}), 500

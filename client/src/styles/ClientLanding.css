@@ -31,20 +31,29 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.5);
+  padding: 1px;
   position: relative;
   z-index: 2;
+}
+
+.nav-links {
+  padding: 5px;
+  color: #1D976C;
 }
 
 .nav-links ul {
   list-style: none;
   display: flex;
   gap: 20px;
+  color: #1D976C;
+}
+
+.nav-links ul li {
+  color: #1D976C;
 }
 
 .nav-links a {
-  color: #fff;
+  color: #1D976C;;
   text-decoration: none;
   transition: color 0.3s;
 }
@@ -56,7 +65,7 @@ body {
 .content {
   text-align: center;
   margin: auto;
-  padding: 40px;
+  padding: 10px;
   animation: fadeIn 1s ease-in-out;
   position: relative;
   z-index: 2;
@@ -90,7 +99,7 @@ body {
 }
 
 .floating-image img {
-  max-width: 150px;
+  max-width: 100px;
 }
 
 .footer {
@@ -100,6 +109,10 @@ body {
   position: relative;
   z-index: 2;
   text-decoration: none;
+}
+
+.footer p {
+  color: white;
 }
 
 .therapist-link{
@@ -117,7 +130,7 @@ body {
 }
 
 .messag {
-  padding-bottom: 50px;
+  padding-bottom: 10px;
   font-size: 25px;
 }
 
@@ -143,3 +156,5 @@ img {
   50% { transform: translateY(-20px); }
   100% { transform: translateY(0); }
 }
+
+

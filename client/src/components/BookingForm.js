@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from './Calendar';
 import { useParams } from 'react-router-dom';
+import SetPrimaryTherapistModal from './SetPrimaryTherapistModal'; // Import the modal
 
-const BookingPage = () => {
+const BookingPage = ({ therapistName }) => {
     const { id } = useParams(); // Get therapistId from URL parameters
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
     const [availableTimes, setAvailableTimes] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
     // Fetch available times when selectedDate changes
     useEffect(() => {
@@ -52,7 +54,6 @@ const BookingPage = () => {
         const token = sessionStorage.getItem('token'); // Retrieve the token from session storage
         console.log("token: ", token);
         
-    
         try {
             const response = await fetch(`${process.env.REACT_APP_FLASK_API_URL}/api/book`, {
                 method: 'POST',
@@ -67,7 +68,7 @@ const BookingPage = () => {
     
             if (response.ok) {
                 alert(data.message);
-                // Optionally reset the form or navigate elsewhere
+                setIsModalOpen(true); // Open the modal after successful booking
             } else {
                 alert(data.error);
             }
@@ -75,11 +76,42 @@ const BookingPage = () => {
             console.error("Error booking appointment:", error);
         }
     };
-    
+
+    const handleModalConfirm = async () => {
+        // Logic to set the therapist as the primary therapist
+        const token = sessionStorage.getItem('token'); // Retrieve the token from session storage
+        const clientId = sessionStorage.getItem('userId');
+
+        console.log(clientId);
+        
+        
+        try {
+            const response = await fetch(`${process.env.REACT_APP_FLASK_API_URL}/api/set-primary-therapist`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ client_id: clientId, therapist_id: id }), // Send therapist ID
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Therapist set as primary successfully.');
+            } else {
+                alert(data.error);
+            }
+        } catch (error) {
+            console.error("Error setting primary therapist:", error);
+        }
+
+        setIsModalOpen(false); // Close the modal after confirming
+    };
 
     return (
         <div className="booking-container">
-            <h2>Book an Appointment with Ms. Walls Ada</h2>
+            <h2>Book an Appointment with {therapistName}</h2>
             <label>Select a service</label>
             <select className="service-select">
                 <option value="counseling">Counseling</option>
@@ -113,6 +145,13 @@ const BookingPage = () => {
             </div>
 
             <button className="confirm-button" onClick={handleBooking}>Confirm booking</button>
+
+            {/* Set Primary Therapist Modal */}
+            <SetPrimaryTherapistModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)} // Close modal
+                onConfirm={handleModalConfirm} // Handle confirmation
+            />
         </div>
     );
 };

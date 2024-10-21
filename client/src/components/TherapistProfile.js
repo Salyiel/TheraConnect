@@ -54,6 +54,7 @@ const TherapistProfile = () => {
                 </div>
             </section>
             <BookingForm 
+                therapistName={therapist.name}
                 selectedDate={selectedDate} 
                 selectedTime={selectedTime} 
                 onDateChange={handleDateChange} 

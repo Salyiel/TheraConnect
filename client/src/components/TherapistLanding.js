@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/TherapistLanding.css";
-import firstImage from "../images/istockphoto-1435001168-612x612.jpg";
+import firstImage from "..//images/glpg-great-lakes-psychology-group-counseling-therapy-therapist-benefits-prepare.png";
 
 const TherapistLanding = () => {
   return (
@@ -15,6 +15,7 @@ const TherapistLanding = () => {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/login">Login</Link></li>
             <li><Link to="/signup">Sign Up</Link></li>
+            <li><Link to="/about-us">About Us</Link></li>
           </ul>
         </nav>
       </header>
@@ -33,7 +34,7 @@ const TherapistLanding = () => {
       </div>
 
       <footer className="footer">
-        <p>Are you looking foa a therapist? Switch to <Link to="/client-landing" className="therapist-link">Client</Link> </p>
+        <p>Are you looking for a therapist? Switch to <Link to="/client-landing" className="therapist-link">Client</Link> </p>
       </footer>
     </div>
   );
