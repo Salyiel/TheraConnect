@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import "./ClientPage.css";
 
 function ClientPage() {
@@ -21,7 +22,9 @@ function ClientPage() {
 
         <section>
           <article className="SessionCard">
-            <h3>My sessions</h3>
+            <h3>
+              <Link to="/sessions">My sessions</Link>
+            </h3>
             <p>No Current session</p>
           </article>
 

@@ -43,8 +43,8 @@ const AdminPage = () => {
                   <p className="profile-details">john@example.com</p>
                   <p className="profile-details">License: 123456</p>
                   <div className="profile-actions">
-                    <button className="btn approve">Approve</button>
-                    <button className="btn disapprove">Disapprove</button>
+                    <button className="btn-approve">Approve</button>
+                    <button className="btn-disapprove">Disapprove</button>
                   </div>
                 </div>
                 {/* Add other profile cards here */}
@@ -120,6 +120,29 @@ const AdminPage = () => {
               <button className="btn send">Send Announcement</button>
             </div>
           );
+          case 'resources':
+            return (
+                <div id="resources">
+                    <h2 className="page-title">Resources</h2>
+                    <div className="form-group">
+                        <label htmlFor="resourceTitle">Resource Title</label>
+                        <input type="text" id="resourceTitle" className="input" placeholder="Enter resource title" />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="resourceLink">Resource Link</label>
+                        <input type="text" id="resourceLink" className="input" placeholder="Enter downloadable resource link" />
+                    </div>
+                    <button className="btn send">Post Resource</button>
+                    {/* List of resources will be shown below */}
+                    <h3 className="section-title">Posted Resources</h3>
+                    <ul className="resource-list">
+                        <li>
+                            <a href="https://example.com/resource1.pdf" target="_blank" rel="noopener noreferrer">Mental Health Guide</a>
+                        </li>
+                        {/* Add more resources here */}
+                    </ul>
+                </div>
+            );
         default:
           return null;
       }
@@ -155,6 +178,7 @@ const AdminPage = () => {
                 <li onClick={() => setActivePage('clients')}>Clients</li>
                 <li onClick={() => setActivePage('statistics')}>Statistics</li>
                 <li onClick={() => setActivePage('announcements')}>Announcements</li>
+                <li onClick={() => setActivePage('resources')}>Resources</li>
               </ul>
             </nav>
             <div className="content">{renderPage()}</div>

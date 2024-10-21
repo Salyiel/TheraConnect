@@ -140,20 +140,24 @@ body {
   color: #333;
 }
 
-.auth-page, .dashboard {
+.auth-page {
+  background-color: #1D976C;
   display: flex;
+  height: 67.7rem;
   justify-content: center;
   align-items: center;
   min-height: 10vh;
 }
 
-.auth-page {
-  background-color: #004d40;
+.dashboard {
+  display: flex;
+  min-height: 10vh;
 }
 
 .auth-title {
   color: #004d40;
-  margin-bottom: 1rem;
+  margin-bottom: 25rem;
+  
 }
 
 .form-group {
@@ -167,40 +171,52 @@ body {
   border: 1px solid #ccc;
 }
 
-.btn {
+.btn-approve {
   width: 100%;
+  background-color: #1D976C;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.btn-disapprove {
+  width: 100%;
+  background-color: #ff0000;
   padding: 0.5rem;
   border-radius: 0.25rem;
   margin-top: 0.5rem;
 }
 
 .submit {
-  background-color: #004d40;
+  background-color: #1D976C;
+  font-size: 1.2rem;
   color: #fff;
 }
 
 .send {
-  background-color: #004d40;
+  background-color: #1D976C;
   color: #fff;
 }
 
 .nav {
-  background-color: #004d40;
+  background-color: #1D976C;
   color: #fff;
   width: 15rem;
-  height: 30rem ;
+  height: 67.7rem ;
   padding: 1rem;
 }
 
 .nav-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .nav-links li {
+  font-size: 1.3rem ;
   cursor: pointer;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .content {
@@ -210,7 +226,7 @@ body {
 
 .page-title {
   font-size: 2rem;
-  color: #004d40;
+  color: #1D976C;
   margin-bottom: 1rem;
 }
 
