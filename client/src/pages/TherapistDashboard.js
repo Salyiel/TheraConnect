@@ -8,6 +8,9 @@ import Appointments from '../components/Therapist/Appointments'; // Importing Ap
 import Client from '../components/Therapist/Client'; // Importing Client component
 import Dashboard from '../components/Therapist/Dashboard'; // Importing actual Dashboard component
 import '../styles/Therapist/Dashboard.css'; // Importing the CSS file
+import Messages from '../components/Therapist/Messages'; // Importing Messages component
+import Resources from '../components/Therapist/Resources'; // Importing Resources component
+
 
 const TherapistDashboard = () => {
   const location = useLocation();
@@ -23,6 +26,10 @@ const TherapistDashboard = () => {
           return <Appointments />;
         case '/therapist-dashboard/clients':
           return <Client />;
+          case '/therapist-dashboard/messages':
+            return <Messages />;
+            case '/therapist-dashboard/resources':
+              return <Resources />;
         default:
           return null; // Handle non-existent routes
       }

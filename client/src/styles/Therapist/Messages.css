@@ -1,0 +1,58 @@
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    height: 80%; /* Adjust height as needed */
+    width: 400px; /* Set a specific width for the chat window */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow effect */
+    position: absolute; /* Absolute positioning for centering */
+    left: 50%; /* Center horizontally */
+    top: 50%; /* Center vertically */
+    transform: translate(-50%, -50%); /* Adjust position */
+}
+
+.message-list {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto; /* Scrollable area */
+}
+
+.message {
+    margin-bottom: 10px;
+}
+
+.message.client {
+    text-align: right;
+}
+
+.message.therapist {
+    text-align: left;
+}
+
+.message-input-container {
+    display: flex;
+    padding: 10px;
+}
+
+.message-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.send-button {
+    margin-left: 10px;
+    padding: 10px;
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.send-button:disabled {
+    background-color: #ccc; /* Gray background when disabled */
+}

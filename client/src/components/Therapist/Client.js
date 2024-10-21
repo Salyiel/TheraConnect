@@ -56,9 +56,7 @@ const Client = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="search-input"
                 />
-                <button className="filter-btn">
-                    Filter
-                </button>
+
                 <button className="add-client-btn" onClick={() => setShowModal(true)}>
                     Add New
                 </button>
