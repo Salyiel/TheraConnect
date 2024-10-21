@@ -163,3 +163,23 @@ class Booking(db.Model):
 
     def __repr__(self):
         return f'<Booking {self.id} - Client: {self.client_id}, Therapist: {self.therapist_id}, Date: {self.date}, Time: {self.time}>'
+    
+
+
+class Appointment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    client_name = db.Column(db.String(80), nullable=False)
+    visit_type = db.Column(db.String(120), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(20), default="Pending")
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'clientName': self.client_name,
+            'visitType': self.visit_type,
+            'date': self.date.strftime('%Y-%m-%d'),
+            'time': self.time,
+            'status': self.status
+        }

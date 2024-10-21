@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from app import db, app, mail
-from models import User, OTP, PendingVerification, EmailChangeVerification, Note, TherapistProfile, Booking
+from models import User, OTP, PendingVerification, EmailChangeVerification, Note, TherapistProfile, Booking, Appointment
 from flask_mail import Message
 from flask_bcrypt import Bcrypt
 from datetime import datetime, timedelta, timezone
@@ -989,6 +989,7 @@ def book_appointment():
         print("Error occurred:", e)  # Log the error for debugging
         return jsonify({'error': 'An error occurred while booking the appointment.'}), 500
     
+    
 
 @app.route('/api/appointments', methods=['GET'])
 def get_appointments():
@@ -1017,3 +1018,165 @@ def get_appointments():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+# *ADMIN PAGE*
+
+# Routes for Approving/Disapproving Therapists
+@app.route('/therapist/<int:id>/approve', methods=['POST'])
+@jwt_required()
+def approve_therapist(id):
+    therapist = therapist.query.get(id)
+    if not therapist:
+        return jsonify({"msg": "Therapist not found"}), 404
+    
+    # Send approval email
+    msg = Message("Approval Notification", recipients=[therapist.contact])  # therapist.contact holds the email
+    msg.body = f"Dear {therapist.name},\n\nYour request has been approved. You can now provide services on our platform.\n\nThank you,\nTheraConnect"
+    mail.send(msg)
+    
+    # Update database or perform other approval actions
+    return jsonify({"msg": f"Therapist {therapist.name} approved and email sent"})
+
+
+@app.route('/therapist/<int:id>/disapprove', methods=['POST'])
+@jwt_required()
+def disapprove_therapist(id):
+    therapist = therapist.query.get(id)
+    if not therapist:
+        return jsonify({"msg": "Therapist not found"}), 404
+    
+    # Get reason for disapproval from request body
+    data = request.json
+    reason = data.get('reason', 'No reason provided')
+
+    # Send disapproval email
+    msg = Message("Disapproval Notification", recipients=[therapist.contact])
+    msg.body = f"Dear {therapist.name},\n\nUnfortunately, your request has been disapproved for the following reason:\n{reason}\n\nThank you,\nTheraConnect"
+    mail.send(msg)
+
+    # Update database or perform other disapproval actions
+    return jsonify({"msg": f"Therapist {therapist.name} disapproved and email sent"})
+
+@app.route('/api/announcements', methods=['POST'])
+@jwt_required()
+def send_announcement():
+    data = request.json
+    message = data['message']
+    recipient = data['recipient']
+
+    # Logic to send announcement to therapists or clients
+    if recipient == 'therapists':
+        # Send announcement to all therapists
+        pass
+    elif recipient == 'clients':
+        # Send announcement to all clients
+        pass
+
+    return jsonify({"msg": "Announcement sent"}), 200
+
+
+@app.route('/api/statistics', methods=['GET'])
+@jwt_required()
+def get_statistics():
+    therapist_count = TherapistProfile.query.count()
+    client_count = User.query.count()
+    return jsonify({
+        "therapists": therapist_count,
+        "clients": client_count
+    })
+
+
+# **Therapiss Page**
+# Route to fetch therapist dashboard data
+@app.route('/api/therapist/dashboard/<int:therapist_id>', methods=['GET'])
+def get_therapist_dashboard(therapist_id):
+    therapist = therapist.query.get_or_404(therapist_id)
+
+    # Total clients and pending requests are just examples based on the model structure
+    total_clients = therapist.total_clients
+    upcoming_appointments = Appointment.query.filter_by(therapist_id=therapist_id, date=datetime.today().date()).count()
+    pending_requests = Appointment.query.filter_by(therapist_id=therapist_id, status='pending').count()
+
+    # Return data as JSON
+    return jsonify({
+        'name': therapist.name,
+        'profile_photo': therapist.profile_photo,
+        'total_clients': total_clients,
+        'upcoming_appointments': upcoming_appointments,
+        'pending_requests': pending_requests
+    })
+
+# Route to fetch today's appointments for a therapist
+@app.route('/api/therapist/<int:therapist_id>/appointments/today', methods=['GET'])
+def get_todays_appointments(therapist_id):
+    today = datetime.today().date()
+    appointments = Appointment.query.filter_by(therapist_id=therapist_id, date=today).all()
+
+    appointments_list = [{
+        'time': appointment.time.strftime('%I:%M %p'),
+        'name': appointment.client_name,
+        'service': appointment.service
+    } for appointment in appointments]
+
+    return jsonify(appointments_list)
+
+# Route to initiate a call or video session (simplified for demo purposes)
+@app.route('/api/therapist/call', methods=['POST'])
+def initiate_call():
+    data = request.get_json()
+    client_name = data.get('name')
+    # Here, you would initiate a call using an API like Twilio, etc.
+    return jsonify({'message': f'Calling {client_name}...'}), 200
+
+@app.route('/api/therapist/video', methods=['POST'])
+def initiate_video():
+    data = request.get_json()
+    client_name = data.get('name')
+    # For demo, this just opens Google Meet. You can replace it with actual video call integration.
+    return jsonify({'message': f'Starting video session with {client_name}...'}), 200
+
+
+# Route to add a new client
+@app.route('/api/clients', methods=['POST'])
+def add_client():
+    data = request.get_json()
+    new_client = User(
+        name=data['name'],
+        last_visit=datetime.strptime(data['lastVisit'], '%Y-%m-%d') if data['lastVisit'] else None,
+        condition=data['condition'],
+        phone=data['phone'],
+        email=data['email']
+    )
+    db.session.add(new_client)
+    db.session.commit()
+    return jsonify({'message': 'Client added successfully!'}), 201
+
+# Route to get all clients
+@app.route('/api/clients', methods=['GET'])
+def get_clients():
+    clients = User.query.all()
+    clients_list = [{
+        'id': client.id,
+        'name': client.name,
+        'lastVisit': client.last_visit.strftime('%Y-%m-%d') if client.last_visit else '',
+        'condition': client.condition,
+        'phone': client.phone,
+        'email': client.email
+    } for client in clients]
+    return jsonify(clients_list)
+
+# Route to schedule an appointment for a client
+@app.route('/api/clients/<int:client_id>/appointments', methods=['POST'])
+def schedule_appointment(client_id):
+    data = request.get_json()
+    new_appointment = Appointment(
+        client_id=client_id,
+        appointment_date=datetime.strptime(data['appointmentDate'], '%Y-%m-%d')
+    )
+    db.session.add(new_appointment)
+    db.session.commit()
+    return jsonify({'message': f'Appointment scheduled for client {client_id}'}), 201
+
+if __name__ == '__main__':
+    app.run(debug=True)
+

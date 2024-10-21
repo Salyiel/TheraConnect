@@ -3,7 +3,7 @@
 .sidebar {
     width: 220px; /* Adjusted width for better alignment */
     height: calc(100vh - 65px); /* Full height minus header height */
-    background-color: #3e8e85; /* Sidebar background color */
+    background-color: #004d40; /* Sidebar background color */
     color: #ffffff; /* Text color */
     font-family: 'Plus Jakarta Sans', sans-serif; /* Font family */
     position: fixed; /* Fixed position for sidebar */
@@ -14,7 +14,7 @@
 }
 
 .dashboardWrapper {
-    background-color: #3e8e85; /* Same as sidebar background */
+    background-color:#004d40; /* Same as sidebar background */
     padding: 20px; /* Add padding for the dashboard */
     text-align: center; /* Center the text */
 }
