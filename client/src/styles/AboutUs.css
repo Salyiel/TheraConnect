@@ -1,0 +1,112 @@
+/* General Styles for About Us Page */
+.about-us-container {
+    justify-content: center;
+    align-items: center;
+    color: #000000;
+    font-family: 'Helvetica Neue', sans-serif;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+  }
+  
+  section {
+    max-width: 800px;
+    text-align: center;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(100px);
+    animation: fadeUp 3s ease-in-out forwards;
+    animation-delay: var(--animation-delay);
+  }
+  
+  /* Animation for text scrolling upwards */
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Styling for each section with an elegant design */
+  .about-us-container h1, h2 {
+    font-size: 2.5rem;
+    color: #000000;
+    margin-bottom: 20px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  
+  p, li {
+    font-size: 1.5rem;
+    line-height: 1.8;
+    margin-bottom: 15px;
+    color: #000000;
+  }
+  
+  /* Add a bit of color and spacing to list items */
+  ul, ol {
+    margin: 20px 0;
+    padding-left: 40px;
+    list-style-type: disc;
+  }
+  
+  ul li span, ol li span {
+    font-weight: bold;
+    color: #000000; /* A stylish deep teal */
+    font-size: 25px;
+  }
+  
+  .hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #3f51b5; /* Modern, classy blue */
+  }
+  
+  /* Add smooth scrolling */
+  
+  
+  /* Make the text scroll automatically from bottom to top */
+  @keyframes autoScroll {
+    0% {
+      transform: translateY(20%);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+  
+  .about-us-container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: linear-gradient(to top, rgba(255,255,255,0.9), rgba(255,255,255,0));
+  }
+  
+  .about-us-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0));
+  }
+  
+  /* Auto-scroll the content up */
+  .about-us-container {
+    animation: autoScroll 80s linear infinite;
+    scrollbar-width: thin;
+  }
+  
+  .about-us-container:hover {
+    animation-play-state: paused; /* Stop auto-scrolling when user hovers */
+  }
+  
+  ::selection {
+    background: #c5e1a5; /* Light green for selected text */
+    color: #333;
+  }
+  

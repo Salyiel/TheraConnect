@@ -1,0 +1,154 @@
+/* TherapistProfile Styles */
+.profile-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 28px;
+    color: #004d40;
+}
+
+.verified {
+    color: green;
+    font-size: 18px;
+}
+
+.profile-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+}
+
+.profile-description {
+    width: 60%;
+}
+
+.profile-description h2 {
+    font-size: 24px;
+}
+
+.profile-description .subtitle {
+    color: #888;
+    font-size: 16px;
+}
+
+.profile-description .experience {
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.profile-description a {
+    color: #009688;
+    text-decoration: none;
+}
+
+.profile-image {
+    width: 30%;
+    text-align: center;
+}
+
+.profile-image img {
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+.thera-image {
+    width: 100%; /* Ensure the image fits the container's width */
+    height: 100%; /* Maintain aspect ratio */
+    object-fit: cover; /* Cover the area without stretching */
+    animation: none;
+}
+
+/* Booking Form Styles */
+.booking-container {
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.service-select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Calendar Styles */
+.calendar-container {
+    margin-bottom: 20px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-date {
+    text-align: center;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.calendar-date.selected {
+    background-color: #009688;
+    color: #fff;
+}
+
+.time-selection {
+    margin-bottom: 20px;
+}
+
+.time-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.time-button {
+    padding: 10px 15px;
+    background-color: #000000;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.time-button.selected {
+    background-color: #009688;
+    color: #fff;
+}
+
+.confirm-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #009688;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-button:hover {
+    background-color: #00796b;
+}

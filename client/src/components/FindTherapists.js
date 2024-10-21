@@ -1,7 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
+import { Link} from "react-router-dom";
 import "../styles/FindTherapists.css";
 
 const FindTherapists = () => {
+  const [therapists, setTherapists] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Fetch therapists data from API
+  useEffect(() => {
+    const fetchTherapists = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_FLASK_API_URL}/api/therapists?page=${currentPage}`);
+        const data = await response.json();
+        setTherapists(data.therapists);
+        setTotalPages(data.total_pages);
+      } catch (error) {
+        console.error("Error fetching therapists:", error);
+      }
+    };
+
+    fetchTherapists();
+  }, [currentPage]);
+
+  // Handle pagination
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
   return (
     <div className="therapists-container">
       {/* Navigation Bar */}
@@ -10,10 +44,10 @@ const FindTherapists = () => {
           <span className="thera">Thera</span><span className="connect">connect</span>
         </div>
         <nav>
-          <a href="#">About</a>
-          <a href="#">Services</a>
-          <a href="#">Mental Health Resources</a>
-          <a href="#" className="highlight-button">How it works</a>
+          <a href=".">About</a>
+          <a href=".">Services</a>
+          <a href=".">Mental Health Resources</a>
+          <a href="." className="highlight-button">How it works</a>
         </nav>
       </header>
 
@@ -39,41 +73,29 @@ const FindTherapists = () => {
 
       {/* Therapists Cards */}
       <div className="therapists-grid">
-        <div className="therapist-card">
-          <div className="therapist-image"></div>
-          <h3>Ms Walls Ada Mphil, PhD</h3>
-          <p className="qualification">Licensed Psychologist</p>
-          <p>Over 15 years experience as a Clinical psychologist.</p>
-          <p className="location">Nairobi, Kenya</p>
-          <a href="#" className="profile-link">see full profile</a>
-        </div>
-        <div className="therapist-card">
-          <div className="therapist-image"></div>
-          <h3>Name</h3>
-          <p className="qualification">Qualification</p>
-          <p>Short Description</p>
-          <p className="location">City, Country</p>
-          <a href="#" className="profile-link">see full profile</a>
-        </div>
-        <div className="therapist-card">
-          <div className="therapist-image"></div>
-          <h3>Name</h3>
-          <p className="qualification">Qualification</p>
-          <p>Short Description</p>
-          <p className="location">City, Country</p>
-          <a href="#" className="profile-link">see full profile</a>
-        </div>
+        {therapists.length > 0 ? (
+          therapists.map(therapist => (
+            <div key={therapist.id} className="therapist-card">
+              <div className="therapist-image">
+                <img src={therapist.image || "path/to/placeholder/image.jpg"} alt={`${therapist.name}`} />
+              </div>
+              <h3>Name: {therapist.name || "Name"}</h3>
+              <p className="qualification">Qualification: {therapist.qualification || "Qualification"}</p>
+              <p className="qualification">Years of Experience: {therapist.experience || "Short Description"}</p>
+              <p className="qualification">Location: {therapist.location || "City, Country"}</p>
+              <Link to={`/therapist-profile/${therapist.id}`} className="profile-link">see full profile</Link>
+            </div>
+          ))
+        ) : (
+          <p>No therapists found.</p>
+        )}
       </div>
 
       {/* Pagination */}
       <div className="pagination">
-        <a href="#">← Previous</a>
-        <span className="current-page">1</span>
-        <a href="#">2</a>
-        <a href="#">3</a>
-        <span>...</span>
-        <a href="#">67</a>
-        <a href="#">Next →</a>
+        <button onClick={handlePrevious} disabled={currentPage === 1}>← Previous</button>
+        <span className="current-page">{currentPage}</span>
+        <button onClick={handleNext} disabled={currentPage === totalPages}>Next →</button>
       </div>
 
       {/* Footer Disclaimer */}

@@ -1,113 +1,165 @@
-from datetime import datetime
-from sqlalchemy.orm import validates
-from sqlalchemy_serializer import SerializerMixin
-from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
-from twilio.rest import Client
-from twilio.base.exceptions import TwilioRestException
-import os
+from flask_bcrypt import generate_password_hash, check_password_hash
+from datetime import datetime,timedelta
 
-# Many-to-many relationship between User and Therapist
-user_therapist_association = db.Table(
-    'user_therapist_association',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('therapist_id', db.Integer, db.ForeignKey('therapist.id'), primary_key=True)
-)
-
-class User(db.Model, SerializerMixin):
-    __tablename__ = 'user'
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    gender = db.Column(db.String(10), nullable=False)
+    dob = db.Column(db.Date, nullable=False)
+    location = db.Column(db.String(100), nullable=True)
+    phone = db.Column(db.String(15), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(200), nullable=False)
-    phone = db.Column(db.String(20), nullable=False)
-    position = db.Column(db.String(50), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    role = db.Column(db.String(20), nullable=False)
+    is_verified = db.Column(db.Boolean, default=False)
 
-    # Relationships
-    appointments = db.relationship('Appointment', back_populates='user', lazy=True)
-    therapists = db.relationship('Therapist', secondary=user_therapist_association, back_populates='users', lazy='dynamic')
+    # Relationship for clients to their therapist
+    therapist_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    therapist = db.relationship('User', remote_side=[id], backref='clients', lazy=True)
 
-    # Serializer rules
-    serialize_rules = ('-password_hash', 'appointments', 'therapists')
-
-    # Validations
-    @validates('email')
-    def validate_email(self, key, value):
-        if not value or '@' not in value:
-            raise ValueError("Invalid email address.")
-        return value
-
-    @validates('phone')
-    def validate_phone(self, key, value):
-        if len(value) < 10:
-            raise ValueError("Phone number must be at least 10 digits.")
-        return value
-
-    # Password hashing
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+    def __init__(self, name, gender, dob, location, phone, email, password, role, is_verified):
+        self.name = name
+        self.gender = gender
+        self.dob = datetime.strptime(dob, '%Y-%m-%d') if isinstance(dob, str) else dob
+        self.location = location
+        self.phone = phone
+        self.email = email
+        self.password_hash = generate_password_hash(password).decode('utf-8')
+        self.role = role
+        self.is_verified = is_verified
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return f'<User {self.id}: {self.name} ({self.email})>'
-
-class Therapist(db.Model, SerializerMixin):
-    __tablename__ = 'therapist'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    phone = db.Column(db.String(20), nullable=False)
-    specialization = db.Column(db.String(100), nullable=False)
-    license_number = db.Column(db.String(50), unique=True, nullable=False)  # New field for license number
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-
-    # Relationships
-    appointments = db.relationship('Appointment', back_populates='therapist', lazy=True)
-    users = db.relationship('User', secondary=user_therapist_association, back_populates='therapists', lazy='dynamic')
-    specializations = db.relationship('Specialization', back_populates='therapist')
-
-    serialize_rules = ('-appointments', '-users')
-
-    # Validations
-    @validates('license_number')
-    def validate_license_number(self, key, value):
-        if len(value) < 6:
-            raise ValueError("License number must be at least 6 characters.")
-        return value
-
-    def __repr__(self):
-        return f'<Therapist {self.id}: {self.name} ({self.specialization}, License: {self.license_number})>'
-
-
-class Appointment(db.Model, SerializerMixin):
-    __tablename__ = 'appointment'
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
-    status = db.Column(db.String(50), default='pending')
-    reminder_sent = db.Column(db.Boolean, default=False)  # Track if reminder was sent
+        return f'<User {self.email}>'
     
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    therapist_id = db.Column(db.Integer, db.ForeignKey('therapist.id'), nullable=False)
-
-    user = db.relationship('User', back_populates='appointments')
-    therapist = db.relationship('Therapist', back_populates='appointments')
-
-    def __repr__(self):
-        return f'<Appointment {self.id}: {self.date} (Status: {self.status})>'
+    notes = db.relationship('Note', backref='user', lazy=True)
 
 
-class Specialization(db.Model, SerializerMixin):
-    __tablename__ = 'specialization'
+class TherapistProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('therapist_profile', uselist=False))
 
-    # Foreign Key to Therapist
-    therapist_id = db.Column(db.Integer, db.ForeignKey('therapist.id'), nullable=False)
+    # Therapist-specific fields
+    image = db.Column(db.String(200), nullable=True)  # File path or URL of the image
+    license_number = db.Column(db.String(200), nullable=True)  # Therapist's license number
+    qualifications = db.Column(db.String(255), nullable=False)
+    specialties = db.Column(db.String(255), nullable=True)
+    experience_years = db.Column(db.Integer, nullable=False)
+    availability = db.Column(db.String(50), nullable=True)
+    consultation_fee = db.Column(db.Float, nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    languages = db.Column(db.String(100), nullable=True)
+    location = db.Column(db.String(100), nullable=True)
 
-    therapist = db.relationship('Therapist', back_populates='specializations')
+    def __init__(self, user_id, image, license_number, qualifications, specialties, experience_years, availability, consultation_fee=None, bio=None, languages=None, location=None):
+        self.user_id = user_id
+        self.image = image
+        self.license_number = license_number
+        self.qualifications = qualifications
+        self.specialties = specialties
+        self.experience_years = experience_years
+        self.availability = availability
+        self.consultation_fee = consultation_fee
+        self.bio = bio
+        self.languages = languages
+        self.location = location
 
     def __repr__(self):
-        return f'<Specialization {self.id}: {self.name}>'
+        return f'<TherapistProfile {self.user.name}>'
+
+
+class PendingVerification(db.Model):
+    name = db.Column(db.String(50), nullable=False)
+    gender = db.Column(db.String(10), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False)
+    dob = db.Column(db.Date, nullable=False)
+    phone = db.Column(db.String(15), nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+    role = db.Column(db.String(20), nullable=False)
+    verification_code = db.Column(db.String(6), nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    is_verified = db.Column(db.Boolean)
+
+
+    def __init__(self, name, email, verification_code, dob, gender, location, phone, password, role, is_verified, expires_at):
+        self.name = name
+        self.email = email
+        self.verification_code = verification_code
+        self.dob = dob
+        self.gender = gender
+        self.location = location
+        self.phone = phone
+        self.password = password
+        self.role = role
+        self.expires_at = expires_at
+        self.is_verified = is_verified
+    
+
+class OTP(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False)
+    otp = db.Column(db.String(6), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    expires_at = db.Column(db.DateTime, nullable=False)
+
+    def is_expired(self):
+        return datetime.utcnow() > self.expires_at
+    
+
+class EmailChangeVerification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    used_email = db.Column(db.String(120), nullable=False)
+    verification_code = db.Column(db.String(6), nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)
+
+    def __init__(self, email, used_email, verification_code, expires_at):
+        self.email = email
+        self.used_email = used_email
+        self.verification_code = verification_code
+        self.expires_at = expires_at
+
+
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Foreign key to User table
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'content': self.content,
+            'user_id': self.user_id,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
+        }
+    
+
+class Booking(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    therapist_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)  # Store only the date
+    time = db.Column(db.String(10), nullable=False)  # Store the time as a string (or use Time type)
+
+    client = db.relationship('User', foreign_keys=[client_id], backref='bookings_as_client', lazy=True)
+    therapist = db.relationship('User', foreign_keys=[therapist_id], backref='bookings_as_therapist', lazy=True)
+
+    def __init__(self, client_id, therapist_id, appointment_date, appointment_time, status='pending'):
+        self.client_id = client_id
+        self.therapist_id = therapist_id
+        self.date = appointment_date
+        self.time = appointment_time  # Save the time
+
+    def __repr__(self):
+        return f'<Booking {self.id} - Client: {self.client_id}, Therapist: {self.therapist_id}, Date: {self.date}, Time: {self.time}>'

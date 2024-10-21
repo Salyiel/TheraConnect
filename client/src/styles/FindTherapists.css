@@ -32,8 +32,8 @@
   }
   
   .connect {
-    color: #234b53;
-    font-weight: normal;
+    color: #1D976C;
+    font-weight: bold;
     font-family: 'Arial', sans-serif;
   }
   
@@ -108,9 +108,9 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
     margin: 20px auto;
-    max-width: 1200px;
-    width: 100%;
-    padding: 0 20px;
+    max-width: 900px;
+    width: 10%;
+    padding: 0 30px;
   }
   
   .therapist-card {
@@ -125,8 +125,19 @@
   .therapist-image {
     width: 100%;
     height: 150px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: #ccc;
     border-radius: 10px;
+  }
+
+  .therapist-image img {
+    width: 100%; /* Ensure the image fits the container's width */
+    height: 100%; /* Maintain aspect ratio */
+    object-fit: cover; /* Cover the area without stretching */
+    animation: none;
   }
   
   .therapist-card h3 {
@@ -195,4 +206,46 @@
     color: #666;
     background-color: #f9f9f9;
   }
+
+  .placeholder {
+    background-color: #f0f0f0; /* Light gray background for placeholders */
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    animation: pulse 1.5s infinite; /* Animation for a loading effect */
+  }
+  
+  .placeholder-image {
+    width: 100%;
+    height: 150px; /* Set height for placeholder image */
+    background-color: #ccc; /* Gray color for image placeholder */
+    border-radius: 4px;
+  }
+  
+  .placeholder-text {
+    height: 15px; /* Height for placeholder text */
+    background-color: #ccc;
+    margin: 5px 0;
+    border-radius: 4px;
+  }
+  
+  .placeholder-link {
+    height: 15px; /* Height for placeholder link */
+    background-color: #ccc;
+    border-radius: 4px;
+  }
+  
+  /* Animation for loading effect */
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
   

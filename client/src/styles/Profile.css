@@ -1,0 +1,118 @@
+.profile-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+  font-family: 'Poppins', sans-serif;
+  background-color: #ffffff; /* Added background color */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: teal; /* Changed header color to teal */
+}
+
+.profile-info {
+  margin-bottom: 30px;
+}
+
+.profile-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+strong {
+  color: teal;
+}
+
+.profile-completion {
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  height: 20px;
+  overflow: hidden;
+}
+
+.progress {
+  background-color: teal;
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid teal;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+.edit-profile, .change-password, .change-email {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f9f9f9; /* Light background for input sections */
+  border-radius: 5px; /* Rounded corners for input sections */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.edit-profile h3, .change-password h3, .change-email h3 {
+  margin-bottom: 10px;
+  color: teal; /* Header color for sections */
+}
+
+input[type="text"], input[type="password"] {
+  width: calc(100% - 20px); /* Full width with padding */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px; /* Space between inputs */
+  outline: none; /* Remove default outline */
+  transition: border-color 0.3s ease; /* Smooth transition for border color */
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+  border-color: teal; /* Change border color on focus */
+}
+
+button {
+  background-color: teal; /* Button background color */
+  color: white; /* Button text color */
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+button:hover {
+  background-color: darkcyan; /* Darker shade on hover */
+}
+
+.feedback-message {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  color: #fff;
+  background-color: #28a745; /* Change this color based on success or error */
+}
+
+.feedback-message.error {
+  background-color: #dc3545; /* Error color */
+}
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
