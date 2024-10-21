@@ -7,11 +7,6 @@ from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 import os
 
-# Twilio configuration
-TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
-TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
-TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
-
 # Many-to-many relationship between User and Therapist
 user_therapist_association = db.Table(
     'user_therapist_association',
