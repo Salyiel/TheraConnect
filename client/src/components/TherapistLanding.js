@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/ClientLanding.css";
+import "../styles/TherapistLanding.css";
 import firstImage from "../images/istockphoto-1435001168-612x612.jpg";
 
 const TherapistLanding = () => {
@@ -22,7 +22,7 @@ const TherapistLanding = () => {
       <div className="content">
         <img src={firstImage} alt="Therapist" />
         <h1 className="head">Connect with a Client Today!</h1>
-        <p className="message">
+        <p className="messag">
             Help others on their journey to mental well-being.
             Sign up today and connect with clients who need your expertise.
         </p>

@@ -33,11 +33,13 @@ body, html {
   display: flex;
   gap: 20px;
   align-items: center;
+  color: #fff;
 }
 
 .nav-links li {
   font-size: 16px;
   cursor: pointer;
+  color: #fff;
 }
 
 .find-therapist-btn {
@@ -133,7 +135,7 @@ body, html {
 .request-otp-btn {
   background-color: #1D976C;
   color: #fff;
-  padding: 10px 20px;
+  padding: 10px 5px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -156,6 +158,16 @@ body, html {
 }
 
 .signup-text a {
+  color: #1D976C;
+  text-decoration: none;
+}
+
+.forgot-password-text {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.forgot-password-text a {
   color: #1D976C;
   text-decoration: none;
 }

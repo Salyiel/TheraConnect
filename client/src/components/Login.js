@@ -11,7 +11,6 @@ const Login = () => {
   const [otpMessage, setOtpMessage] = useState('');
   const [loading, setLoading] = useState(false); // State for loading
   const navigate = useNavigate();
-  const [role, setRole] = useState('');
 
   const clearMessages = () => {
     setError('');
@@ -39,9 +38,7 @@ const Login = () => {
 
       setOtpRequested(true);
       setOtpMessage('OTP sent to your email! Please check your inbox.');
-      if (data.role) {
-        setRole(data.role);
-      }
+      
     } catch (err) {
       setError('An unexpected error occurred.');
     } finally {
@@ -52,8 +49,8 @@ const Login = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     clearMessages();
-    setLoading(true); // Set loading to true
-
+    setLoading(true); 
+  
     try {
       const response = await fetch(`${process.env.REACT_APP_FLASK_API_URL}/api/verify-otp`, {
         method: 'POST',
@@ -62,27 +59,48 @@ const Login = () => {
         },
         body: JSON.stringify({ email, otp }),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         setError(data.error || 'OTP verification failed. Please try again.');
         return;
       }
-
-      // Store the token in sessionStorage
-      sessionStorage.setItem('token', data.token);
-
-      console.log('token: ', data.token )
-
-      // Navigate based on user role
-      navigate(`/${role}`);
+  
+      // Log the user data
+      console.log('user data:', data.user);
+  
+      // Ensure the response contains token and user details
+      if (data.token && data.user) {
+        sessionStorage.setItem('token', data.token);
+        sessionStorage.setItem('userId', data.user.id);
+        sessionStorage.setItem('userName', data.user.name);
+        sessionStorage.setItem('userEmail', data.user.email);
+  
+        // Check if user is a therapist and their verification status
+        if (data.user.role === 'therapist') {
+          if (data.user.is_verified) {
+            // Navigate to therapist's landing page
+            navigate('/therapist-landing'); // Update to your therapist landing page route
+          } else {
+            // Navigate to therapist info page
+            navigate('/therapist-info');
+          }
+        } else {
+          // Navigate to the role-specific landing page for non-therapists
+          navigate(`/${data.user.role}`);
+        }
+      } else {
+        setError('Invalid response from server. Missing user details.');
+      }
     } catch (err) {
       setError('An unexpected error occurred during OTP verification.');
     } finally {
-      setLoading(false); // Set loading to false
+      setLoading(false); 
     }
   };
+  
+
 
   return (
     <div className="login-page">
@@ -147,6 +165,10 @@ const Login = () => {
             {error && <p className="error">{error}</p>}
             {otpMessage && <p className="otp-message">{otpMessage}</p>}
           </form>
+
+          <p className="forgot-password-text">
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </p>
 
           <p className="signup-text">
             Don’t have an account? <Link to="/signup">Sign up</Link>

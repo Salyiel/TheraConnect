@@ -22,7 +22,6 @@
   
   /* Dashboard Layout */
   .dashboard-container {
-    padding: 20px;
     max-width: 100%;
     margin: auto;
   }
@@ -30,14 +29,14 @@
   .dashboard-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    padding: 20px;
+    background-color: rgb(4, 37, 3);
   }
   
   .logo {
+    font-family: 'Arial Black', sans-serif;
+    color: #1D976C;
     font-size: 24px;
-    font-weight: bold;
-    color: teal;
   }
   
   .dashboard-nav button {
@@ -45,20 +44,35 @@
     padding: 10px 20px;
     background-color: transparent;
     border: 2px solid teal;
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
   }
   
-  .dashboard-nav button:hover {
+  .navigation-links button:hover {
     background-color: teal;
+    color: rgb(255, 255, 255);
+  }
+
+  .navigation-links {
+    text-decoration: none;
+    display: flex;
+    gap: 25px;
+    list-style: none;
     color: white;
+  }
+
+  .navigation-links a {
+    color: #ffffff;
+    text-decoration: none;
   }
   
   .welcome-message h2 {
     font-size: 32px;
     margin-bottom: 30px;
+    text-align: center;
+    margin-top: 5%;
   }
   
   .dashboard-grid {
@@ -75,7 +89,12 @@
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    height: 235px
+    height: 235px;
+    margin-top: 28%;
+  }
+
+  .card p {
+    font-size: 15px;
   }
   
   .card:hover {
@@ -90,6 +109,8 @@
     border-radius: 5px;
     padding: 10px;
     resize: none;
+    max-height: 300px;
+    overflow-y: auto;  /* Enable vertical scrolling */
   }
   
   .notes-area {
@@ -97,7 +118,37 @@
     height: 100px;
     border-radius: 5px;
     padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;  /* Enable vertical scrolling */
   }
+
+  .notes-list-container {
+    max-height: 150px; /* Adjust as needed */
+    overflow-y: auto;  /* Enable scrolling */
+    padding: 10px;     /* Optional: add some padding */
+    border: 1px solid #ccc; /* Optional: add a border */
+  }
+
+  .appointments-list li {
+    font-size: 15px;
+  }
+
+  .resources li {
+    color: #1D976C;
+    max-height: 300px;
+    overflow-y: auto;  /* Enable vertical scrolling */
+    font-size: 5px;
+    list-style: none;
+  }
+
+  .resources li a{
+    text-decoration: none;
+    color: #1D976C;
+    font-size: 15px;
+    margin-left: 0;
+    list-style: 0;
+  }
+  
   
   /* Modal Styles */
   .modal-overlay {
@@ -137,7 +188,7 @@
   
   /* Resource Videos Section */
   .resource-videos {
-    margin-top: 0;
+    margin-top: 5%;
     color: aquamarine;
   }
   
@@ -186,7 +237,7 @@
     }
   }
 
-  Link {
+  page {
     text-decoration: none;
     font-style: normal;
   }

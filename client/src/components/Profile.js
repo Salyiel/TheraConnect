@@ -15,11 +15,17 @@ const Profile = () => {
   const [retypePassword, setRetypePassword] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [oldEmail, setOldEmail] = useState(''); // State for old email
+  const [otp, setOtp] = useState(''); // State for OTP
   const [showChangePassword, setShowChangePassword] = useState(false); // State for dropdown visibility
   const [showChangeEmail, setShowChangeEmail] = useState(false); // State for dropdown visibility
+  const [changeEmailPassword, setChangeEmailPassword] = useState('');
+  const [isOtpSent, setIsOtpSent] = useState(false); // State to track OTP sent status
+  const [message, setMessage] = useState(''); // State for feedback messages
   const backend = process.env.REACT_APP_FLASK_API_URL;
 
   const fetchUserInfo = useCallback(async () => {
+    setLoading(true);
+    setMessage('Loading user info...');
     try {
       const token = sessionStorage.getItem('token');
       const response = await axios.get(`${backend}/api/profile`, {
@@ -31,8 +37,10 @@ const Profile = () => {
       const { user, profileCompletion } = response.data;
       setUserInfo(user);
       setProfileCompletion(profileCompletion);
+      setMessage('User info loaded successfully!');
     } catch (error) {
       console.error("Error fetching user info", error);
+      setMessage("Error loading user info. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -50,6 +58,7 @@ const Profile = () => {
   };
 
   const handleSaveProfile = async () => {
+    setMessage('Saving profile...');
     try {
       const token = sessionStorage.getItem('token');
       await axios.put(`${backend}/api/profile`, {
@@ -64,22 +73,25 @@ const Profile = () => {
 
       await fetchUserInfo();
       setEditMode(false);
+      setMessage('Profile updated successfully!');
     } catch (error) {
       console.error("Error saving profile", error);
+      setMessage("Error saving profile. Please try again.");
     }
   };
 
   const handleChangePassword = async () => {
     if (newPassword !== retypePassword) {
-      alert("New passwords do not match.");
+      setMessage("New passwords do not match.");
       return;
     }
 
+    setMessage('Changing password...');
     try {
       const token = sessionStorage.getItem('token');
       await axios.put(`${backend}/api/change-password`, {
-        currentPassword,
-        newPassword
+        currentPassword: currentPassword,
+        newPassword: newPassword
       }, {
         headers: {
           'Authorization': `Bearer ${token}`  // Include the token in the headers
@@ -90,28 +102,53 @@ const Profile = () => {
       setNewPassword('');
       setRetypePassword('');
       setShowChangePassword(false); // Close dropdown after saving
+      setMessage("Password changed successfully!");
     } catch (error) {
       console.error("Error changing password", error);
+      setMessage("Error changing password. Please check your current password and try again.");
     }
   };
 
   const handleChangeEmail = async () => {
+    setMessage('Sending verification code for email change...');
     try {
-      const token = sessionStorage.getItem('token');
+      const oldEmail = sessionStorage.getItem('userEmail');  // Get old email from session storage
+      
       await axios.put(`${backend}/api/change-email`, {
         oldEmail,
-        newEmail
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`  // Include the token in the headers
-        }
+        newEmail,
+        currentPassword: changeEmailPassword,
       });
-
-      setNewEmail('');
-      setOldEmail(''); // Clear old email field
-      setShowChangeEmail(false); // Close dropdown after saving
+  
+      setIsOtpSent(true); // Set the flag to indicate verification code was sent
+      setShowChangeEmail(false); // Close dropdown after sending verification code
+      setMessage("Verification code sent! Please check your email.");
+      
     } catch (error) {
-      console.error("Error changing email", error);
+      console.error("Error sending verification code for email change", error);
+      setMessage("Error sending verification code. Please try again.");
+    }
+  };
+  
+  const handleVerifyEmailChange = async () => {
+    setMessage('Verifying email change...');
+    try {
+      await axios.post(`${backend}/api/verify-email-change`, {
+        oldEmail, 
+        newEmail,
+        verification_code: otp,  // Change 'otp' to 'verification_code'
+      });
+  
+      alert("Email changed successfully!");
+      setNewEmail('');
+      setOldEmail('');// Clear old email field
+      setChangeEmailPassword('') 
+      setOtp(''); // Clear verification code field
+      setIsOtpSent(false); // Reset verification code sent status
+      setMessage("Email changed successfully!");
+    } catch (error) {
+      console.error("Error verifying verification code", error);
+      setMessage("Error verifying verification code. Please check your OTP and try again.");
     }
   };
 
@@ -216,7 +253,7 @@ const Profile = () => {
         <h3 onClick={() => setShowChangeEmail(!showChangeEmail)} style={{ cursor: 'pointer' }}>
           Change Email
         </h3>
-        {showChangeEmail && (
+        {showChangeEmail && !isOtpSent && (
           <div>
             <input
               type="text"
@@ -226,14 +263,34 @@ const Profile = () => {
             />
             <input
               type="text"
-              placeholder="New Email"
+              placeholder="Enter New Email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
             />
-            <button onClick={handleChangeEmail}>Change Email</button>
+            <input
+              type="password" // Changed to type="password"
+              placeholder="Verify Password"
+              value={changeEmailPassword} // Use the separate state
+              onChange={(e) => setChangeEmailPassword(e.target.value)}
+            />
+            <button onClick={handleChangeEmail}>Send Verification Code</button>
+          </div>
+        )}
+
+        {isOtpSent && (
+          <div>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <button onClick={handleVerifyEmailChange}>Verify Email Change</button>
           </div>
         )}
       </div>
+
+      {message && <div className="feedback-message">{message}</div>} {/* Display feedback messages */}
     </div>
   );
 };

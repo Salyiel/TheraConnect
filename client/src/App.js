@@ -8,6 +8,10 @@ import TherapistLanding from './components/TherapistLanding';
 import Verification from './components/Verification';
 import Clientdashboard from './components/ClientDashboard'
 import Profile from './components/Profile'
+import ForgotPassword from './components/ForgotPassword';
+import AboutUs from './components/AboutUs'
+import TherapistInfo from './components/TherapistInfo';
+import TherapistProfile from './components/TherapistProfile';
 
 function App() {
   return (
@@ -30,6 +34,10 @@ function App() {
           <Route path="/verify" element={<Verification />} />
           <Route path="/client" element={<Clientdashboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/therapist-info" element={<TherapistInfo />} />
+          <Route path="/therapist-profile/:id" element={<TherapistProfile />} />
         </Routes>
       </div>
     </Router>

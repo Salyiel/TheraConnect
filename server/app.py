@@ -29,10 +29,10 @@ bcrypt = Bcrypt(app)
 
 # Initialize Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 555
+app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'noreply@tc.com'  # Replace with your email
-app.config['MAIL_PASSWORD'] = 'password'  # Replace with your email password
+app.config['MAIL_USERNAME'] = 'theraconnectteam@gmail.com'  # Replace with your email
+app.config['MAIL_PASSWORD'] = 'mlsj vhwr nmig dwpt'  # Replace with your email password
 app.config['MAIL_DEFAULT_SENDER'] = 'noreply@tc.com'  # Set default sender
 
 mail = Mail(app)
