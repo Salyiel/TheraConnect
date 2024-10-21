@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
@@ -14,6 +14,8 @@ import ForgotPassword from './components/ForgotPassword';
 import AboutUs from './components/AboutUs'
 import TherapistInfo from './components/TherapistInfo';
 import TherapistProfile from './components/TherapistProfile';
+import TherapistDashboard from './pages/TherapistDashboard';
+
 
 function App() {
   return (
@@ -40,6 +42,7 @@ function App() {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/therapist-info" element={<TherapistInfo />} />
           <Route path="/therapist-profile/:id" element={<TherapistProfile />} />
+          <Route path="/therapist-dashboard" element={< TherapistDashboard />} />
         </Routes>
       </div>
     </Router>
