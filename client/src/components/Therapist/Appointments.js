@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import '../../styles/Therapist/Appointments.css'; // Ensure this file exists for styling
 
+
+
 const Appointments = () => {
   const [appointments] = useState([
     {
