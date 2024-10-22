@@ -1,13 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "./AdminPage.css";
 
 const AdminPage = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [activePage, setActivePage] = useState('therapists');
-  
+
+    useEffect(() => {
+      axios.get('http://localhost:5000/resources')
+        .then(response => setResources(response.data))
+        .catch(error => console.error('Error fetching resources:', error));
+    }, []);
+
     const handleAuthSubmit = (event) => {
       event.preventDefault();
       setIsAuthenticated(true);
+    };
+
+    const handlePostResource = () => {
+      axios.post('http://localhost:5000/resources', {
+        title: resourceTitle,
+        link: resourceLink
+      })
+      .then(response => {
+        alert(response.data.message);
+        // Optionally refresh the list of resources after posting
+      })
+      .catch(error => console.error('Error posting resource:', error));
     };
   
     const renderPage = () => {
