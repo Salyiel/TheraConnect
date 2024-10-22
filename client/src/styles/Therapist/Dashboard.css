@@ -1,6 +1,6 @@
 /* src/styles/Therapist/Dashboard.css */
 
-.dashboard-container {
+.dashboard-containera {
   display: flex;
   flex-direction: column;
   align-items: center; /* Center contents horizontally */

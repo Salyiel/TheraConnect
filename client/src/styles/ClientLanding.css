@@ -36,19 +36,19 @@ body {
   z-index: 2;
 }
 
-.nav-links {
+.nav-linksb {
   padding: 5px;
   color: #1D976C;
 }
 
-.nav-links ul {
+.nav-linksb ul {
   list-style: none;
   display: flex;
   gap: 20px;
   color: #1D976C;
 }
 
-.nav-links ul li {
+.nav-linksb ul li {
   color: #1D976C;
 }
 
@@ -58,7 +58,7 @@ body {
   transition: color 0.3s;
 }
 
-.nav-links a:hover {
+.nav-linksb a:hover {
   color: #ffcc00;
 }
 

@@ -23,7 +23,7 @@ const ClientLanding = () => {
       <div className="content">
         <img src={firstImage} alt="Therapist" />
         <h1 className="head">Connect with a Therapist Today!</h1>
-        <p className="messag">
+        <p className="message">
           Your mental health is a priority. Find the right therapist who suits your needs.
           Join our community of individuals who are taking the first step towards better mental health.
         </p>

@@ -17,7 +17,7 @@ body {
   min-height: 10vh;
 }
 
-.dashboard {
+.dashboardb {
   display: flex;
   min-height: 10vh;
 }
@@ -66,7 +66,7 @@ body {
   color: #fff;
 }
 
-.nav {
+.nava {
   background-color: #03432d;
   color: #fff;
   width: 15rem;
@@ -74,14 +74,14 @@ body {
   padding: 1rem;
 }
 
-.nav-title {
+.nav-titlea {
   font-size: 1.5rem;
   font-weight: bold;
   margin-top: 1.5rem;
   margin-bottom: 2.5rem;
 }
 
-.nav-links li {
+.nav-linksa li {
   font-size: 1.3rem ;
   cursor: pointer;
   margin-bottom: 2rem;

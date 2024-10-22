@@ -24,7 +24,7 @@ const AdminPage = () => {
   };
 
   const handlePostResource = () => {
-    axios.post('http://localhost:5000/resources', {
+    axios.post('http://127.0.0.1:5000/resources', {
       title: resourceTitle,
       link: resourceLink
     })

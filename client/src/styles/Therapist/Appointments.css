@@ -1,4 +1,4 @@
-.appointments-container {
+.appointments-containera {
     width: 70%; /* Limit width for better readability */
     margin: 70px auto; /* Center container */
     padding: 30px; /* Padding for the main container */
@@ -7,7 +7,7 @@
     background-color: #ffffff; /* White background */
 }
 
-.appointments-header {
+.appointments-headera {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
@@ -37,7 +37,7 @@
     background-color: #00b29c;
 }
 
-.appointments-section {
+.appointments-sectiona {
     margin-bottom: 30px;
     padding: 20px; /* Added padding */
     border: 1px solid #ddd;

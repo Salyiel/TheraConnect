@@ -1,6 +1,6 @@
 /* src/styles/Therapist/Resources.css */
 
-.resources-container {
+.resources-containera {
     display: flex; /* Flexbox to ensure proper layout with sidebar */
     flex-direction: column; /* Ensure items are stacked vertically */
     width: 70%; /* Adjust based on sidebar width */
