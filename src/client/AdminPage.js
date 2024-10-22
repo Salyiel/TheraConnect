@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import "./AdminPage.css";
+import axios from 'axios';
+
 
 const AdminPage = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [activePage, setActivePage] = useState('therapists');
+    const [resources, setResources] = useState([]);
+    const [resourceTitle, setResourceTitle] = useState('');
+    const [resourceLink, setResourceLink] = useState('');
 
     useEffect(() => {
       axios.get('http://localhost:5000/resources')
@@ -22,8 +27,10 @@ const AdminPage = () => {
         link: resourceLink
       })
       .then(response => {
-        alert(response.data.message);
-        // Optionally refresh the list of resources after posting
+        setResources([...resources, response.data]);
+        setResourceTitle('');
+        setResourceLink('');
+      
       })
       .catch(error => console.error('Error posting resource:', error));
     };
@@ -144,19 +151,35 @@ const AdminPage = () => {
                     <h2 className="page-title">Resources</h2>
                     <div className="form-group">
                         <label htmlFor="resourceTitle">Resource Title</label>
-                        <input type="text" id="resourceTitle" className="input" placeholder="Enter resource title" />
+                        <input 
+                            type="text" 
+                            id="resourceTitle" 
+                            className="input" 
+                            placeholder="Enter resource title"
+                            value={resourceTitle} 
+                            onChange={(e) => setResourceTitle(e.target.value)} 
+                        />
                     </div>
                     <div className="form-group">
                         <label htmlFor="resourceLink">Resource Link</label>
-                        <input type="text" id="resourceLink" className="input" placeholder="Enter downloadable resource link" />
+                        <input 
+                            type="text" 
+                            id="resourceLink" 
+                            className="input" 
+                            placeholder="Enter downloadable resource link"
+                            value={resourceLink}
+                            onChange={(e) => setResourceLink(e.target.value)} 
+                        />
                     </div>
-                    <button className="btn send">Post Resource</button>
+                    <button className="btn send" onClick={handlePostResource}>Post Resource</button>
                     {/* List of resources will be shown below */}
                     <h3 className="section-title">Posted Resources</h3>
                     <ul className="resource-list">
-                        <li>
-                            <a href="https://example.com/resource1.pdf" target="_blank" rel="noopener noreferrer">Mental Health Guide</a>
-                        </li>
+                    {resources.map((resource, index) => (
+                                <li key={index}>
+                                    <a href={resource.link} target="_blank" rel="noopener noreferrer">{resource.title}</a>
+                                </li>
+                            ))}
                         {/* Add more resources here */}
                     </ul>
                 </div>
