@@ -3,7 +3,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '../components/Therapist/Header'; // Importing Header
 import Sidebar from '../components/Therapist/Sidebar'; // Importing Sidebar
-import Profile from '../components/Therapist/Profile'; // Importing Profile component
+import Profile from '../components/Therapist/Profile1'; // Importing Profile component
 import Appointments from '../components/Therapist/Appointments'; // Importing Appointments component
 import Client from '../components/Therapist/Client'; // Importing Client component
 import Dashboard from '../components/Therapist/Dashboard'; // Importing actual Dashboard component

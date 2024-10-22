@@ -1080,4 +1080,5 @@ def get_primary_therapist(user_id):
         print("Error fetching primary therapist:", e)
         return jsonify({'error': 'An error occurred while fetching the therapist'}), 500
 
+# ****************************Therapist Page************************************************************
 
