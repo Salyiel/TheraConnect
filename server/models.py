@@ -198,10 +198,19 @@ class Client(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
 
+# Resource Model (ensure this model exists in your application)
 class Resource(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    link = db.Column(db.String(500), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    topic = db.Column(db.String(100), nullable=True)
+    url = db.Column(db.String(255), nullable=False)
+    is_approved = db.Column(db.Boolean, default=False)
+    added_by = db.Column(db.Integer, db.ForeignKey('user.id'))  # User who added the resource
+    added_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Resource {self.title}>'
+
 
 class Announcement(db.Model):
     id = db.Column(db.Integer, primary_key=True)

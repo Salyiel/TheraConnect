@@ -1263,35 +1263,79 @@ def admin_login():
         return jsonify(access_token=access_token), 200
     return jsonify({"msg": "Bad credentials"}), 401
 
-
+# Manage resources endpoint
 @app.route('/api/resources', methods=['GET', 'POST'])
 @jwt_required()
 def manage_resources():
+    user_role = get_jwt_identity()['role']  # Get the role from JWT token (assuming role is stored in token)
+    
     if request.method == 'POST':
-        # Get the JSON data
+        # Only allow admins and therapists to add new resources
+        if user_role not in ['admin', 'therapist']:
+            return jsonify({'error': 'Unauthorized access'}), 403
+
         data = request.get_json()
-        # Add a new resource (by therapist or admin)
         new_resource = Resource(
             title=data['title'],
             topic=data.get('topic', ''),  # Optional if topic is not mandatory
             url=data['url'],  # Use 'url' to stay consistent
-            is_approved=False  # Default to False for new resources
+            is_approved=user_role == 'admin',  # Auto-approve if added by an admin
+            added_by=get_jwt_identity()['user_id']  # Set the current user as the one who added it
         )
         db.session.add(new_resource)
         db.session.commit()
-        
-        # Notify the admin (e.g., via an alert or notification service)
-        notify_admin_new_resource(new_resource)  # Implement this function based on your notification setup
-        
-        return jsonify({'message': 'Resource added and pending admin approval'}), 201
 
-    # If it's a GET request, return all resources or just approved ones
-    resources = Resource.query.filter_by(is_approved=True).all() if request.args.get('admin') else Resource.query.all()
-    return jsonify([{'title': r.title, 'link': r.url, 'topic': r.topic} for r in resources]), 200
+        if user_role == 'therapist':  # Notify admin if added by a therapist
+            notify_admin_new_resource(new_resource)
+        
+        status_message = 'Resource added and pending admin approval' if user_role == 'therapist' else 'Resource added and approved'
+        return jsonify({'message': status_message}), 201
 
-# Helper function to notify admin of new resource
+    # If it's a GET request, return resources based on the user role
+    if user_role == 'admin':
+        resources = Resource.query.all()
+    else:
+        resources = Resource.query.filter_by(is_approved=True).all()
+
+    resource_list = [
+        {
+            'id': r.id,
+            'title': r.title,
+            'topic': r.topic,
+            'url': r.url,
+            'is_approved': r.is_approved,
+            'added_by': r.added_by,
+            'added_date': r.added_date.strftime('%Y-%m-%d')
+        } for r in resources
+    ]
+    return jsonify(resource_list), 200
+
+# Approve or Reject Resource by Admin
+@app.route('/api/resources/<int:resource_id>/approve', methods=['PATCH'])
+@jwt_required()
+def approve_resource(resource_id):
+    user_role = get_jwt_identity()['role']
+    if user_role != 'admin':
+        return jsonify({'error': 'Only admins can approve or reject resources'}), 403
+    
+    action = request.json.get('action')
+    if action not in ['approve', 'reject']:
+        return jsonify({'error': 'Invalid action. Use "approve" or "reject"'}), 400
+    
+    resource = Resource.query.get_or_404(resource_id)
+    if action == 'approve':
+        resource.is_approved = True
+        message = 'Resource approved successfully'
+    else:
+        db.session.delete(resource)
+        message = 'Resource rejected and deleted successfully'
+    
+    db.session.commit()
+    return jsonify({'message': message}), 200
+
+# Helper function to notify admin of new resource (implement as needed)
 def notify_admin_new_resource(resource):
-    # Your logic to notify the admin, e.g., via email, dashboard update, etc.
+    # Example: notify via email, update dashboard, etc.
     pass
 
 # Updated get_users endpoint to filter users by role ('client' or 'therapist')
