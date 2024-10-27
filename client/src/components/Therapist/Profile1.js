@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../../styles/Therapist/Profile.css'; // Make sure this file exists for styling
+import Sidebar from './Sidebar';
 
 const Profile = () => {
   // Initial profile state

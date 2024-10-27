@@ -1,32 +1,31 @@
-// src/components/Therapist/Sidebar.js
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom'; // Use NavLink for active link styling
 import '../../styles/Therapist/Sidebar.css'; // Importing Sidebar CSS
 
 const Sidebar = () => {
-   
-  return (
-    <div className="sidebar">
-      <Link to="/therapist-dashboard" className="sidebarLink dashboardParent">
-        <b className="dashboard">Dashboard</b>
-      </Link>
-      <Link to="/therapist-dashboard/profile" className="sidebarLink profileParent">
-        <b className="profile">Profile</b>
-      </Link>
-      <Link to="/therapist-dashboard/appointments" className="sidebarLink appointmentsParent">
-        <b className="appointments">Appointments</b>
-      </Link>
-      <Link to="/therapist-dashboard/messages" className="sidebarLink messagesParent">
-        <b className="messages">Messages</b>
-      </Link>
-      <Link to="/therapist-dashboard/clients" className="sidebarLink clientsParent">
-        <b className="clients">Clients</b>
-      </Link>
-      <Link to="/therapist-dashboard/resources" className="sidebarLink resourcesParent">
-        <b className="resources">Resources</b>
-      </Link>
-    </div>
-  );
+    const sidebarLinks = [
+        { path: "/therapist-dashboard", label: "Dashboard", className: "dashboardParent" },
+        { path: "/therapist-dashboard/profile", label: "Profile", className: "profileParent" },
+        { path: "/therapist-dashboard/appointments", label: "Appointments", className: "appointmentsParent" },
+        { path: "/therapist-dashboard/messages", label: "Messages", className: "messagesParent" },
+        { path: "/therapist-dashboard/clients", label: "Clients", className: "clientsParent" },
+        { path: "/therapist-dashboard/resources", label: "Resources", className: "resourcesParent" },
+    ];
+
+    return (
+        <div className="sidebar">
+            {sidebarLinks.map((link, index) => (
+                <NavLink
+                    key={index}
+                    to={link.path}
+                    className={`sidebarLink ${link.className}`}
+                    activeClassName="active" // Class to apply for active links
+                >
+                    <b className={link.label.toLowerCase()}>{link.label}</b>
+                </NavLink>
+            ))}
+        </div>
+    );
 };
 
 export default Sidebar;

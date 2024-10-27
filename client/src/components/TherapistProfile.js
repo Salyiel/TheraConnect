@@ -39,7 +39,7 @@ const TherapistProfile = () => {
     }
 
     return (
-        <div className="profile-container">
+        <div className="profile-containerb">
             <header>
                 <h1>{therapist.name} <span className="verified">✔ Verified</span></h1>
             </header>

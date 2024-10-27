@@ -2,6 +2,7 @@
 
 import '../../styles/Therapist/Resources.css'; // Ensure this matches your CSS file
 import React, { useState } from 'react';
+import Sidebar from './Sidebar';
 
 const Resources = () => {
   const [selectedTopic, setSelectedTopic] = useState('All');

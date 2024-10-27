@@ -1080,114 +1080,193 @@ def get_primary_therapist(user_id):
         print("Error fetching primary therapist:", e)
         return jsonify({'error': 'An error occurred while fetching the therapist'}), 500
 
-# ****************************Therapist Page************************************************************
+# ****************************Therapist Page***********************************************************************
+
+
+# Endpoint to get all clients
+@app.route('/api/clients', methods=['GET'])
+def get_clients():
+    clients = Client.query.all()
+    client_list = [
+        {
+            "id": client.id,
+            "name": client.name,
+            "lastVisit": client.last_visit,
+            "condition": client.condition,
+            "phone": client.phone,
+            "email": client.email
+        } for client in clients
+    ]
+    return jsonify(client_list), 200
+
+# Endpoint to schedule an appointment
+@app.route('/api/appointments', methods=['POST'])
+def schedule_appointment():
+    data = request.json
+    client_id = data['clientId']
+    appointment_date = datetime.strptime(data['appointmentDate'], '%Y-%m-%d').date()
+    
+    new_appointment = Appointment(client_id=client_id, appointment_date=appointment_date)
+    db.session.add(new_appointment)
+    db.session.commit()
+    return jsonify({"message": "Appointment scheduled successfully"}), 201
+
+# Endpoint to get appointments for a client
+@app.route('/api/appointments/<int:client_id>', methods=['GET'])
+def get_client_appointments(client_id):
+    appointments = Appointment.query.filter_by(client_id=client_id).all()
+    appointment_list = [
+        {
+            "id": appt.id,
+            "appointmentDate": appt.appointment_date.strftime('%Y-%m-%d')
+        } for appt in appointments
+    ]
+    return jsonify(appointment_list), 200
+
+
+# Get all resources
+@app.route('/api/resources', methods=['GET'])
+def get_resources():
+    resources = Resource.query.all()
+    return jsonify([resource.to_dict() for resource in resources]), 200
+
+# Add a new resource
+@app.route('/api/resources', methods=['POST'])
+def add_resource():
+    data = request.json
+    new_resource = Resource(
+        title=data['title'],
+        topic=data['topic'],
+        url=data['url']
+    )
+    db.session.add(new_resource)
+    db.session.commit()
+    return jsonify(new_resource.to_dict()), 201
 
 # *****************************Admin Page**************************************************************************
 @app.route('/')
 def home():
     return "Welcome to the Admin Dashboard!"
 
-# # Create a new therapist
-# @app.route('/therapists', methods=['POST'])
-# def create_therapist():
-#     data = request.get_json()  # Get the data from the request body
-#     new_therapist = Therapist(name=data['name'], license_number=data['license_number'])
-#     db.session.add(new_therapist)
-#     db.session.commit()
-#     return jsonify({'message': 'Therapist added successfully'}), 201
+# Route to sub@app.route('/api/therapist-info', methods=['POST'])
+def submit_therapist_info():
+    data = request.get_json()
 
-# # Get all therapists
-# @app.route('/therapists', methods=['GET'])
-# def get_therapists():
-#     therapists = Therapist.query.all()  # Fetch all therapists from the database
-#     return jsonify([{'id': t.id, 'name': t.name, 'license_number': t.license_number, 'approved': t.approved} for t in therapists])
+    # Validate required fields
+    required_fields = ['bio', 'licenseno', 'specialties', 'experience', 'qualifications', 'availability', 'contactNumber']
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return jsonify({"error": f"Missing fields: {', '.join(missing_fields)}"}), 400
 
-# Approve a therapist
-@app.route('/therapists/<int:id>/approve', methods=['PATCH'])
-def approve_therapist(id):
+    try:
+        new_therapist = Therapist(
+            bio=data['bio'],
+            licenseno=data['licenseno'],
+            specialties=data['specialties'],
+            experience=data['experience'],
+            qualifications=data['qualifications'],
+            availability=data['availability'],
+            contact_number=data['contactNumber'],
+            status='pending'
+        )
+        db.session.add(new_therapist)
+        db.session.commit()
+        return jsonify({"message": "Therapist info submitted for approval!"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+# Route to fetch pending therapist submissions
+@app.route('/api/therapist-pending-list', methods=['GET'])
+@jwt_required()
+def get_pending_therapists():
+    pending_therapists = Therapist.query.filter_by(status='pending').all()
+    return jsonify([therapist.serialize() for therapist in pending_therapists]), 200
+
+# Route to approve or disapprove therapist with notifications
+@app.route('/api/therapist-status-update/<int:id>', methods=['PATCH'])
+@jwt_required()
+def update_therapist_status(id):
     therapist = Therapist.query.get_or_404(id)
-    therapist.approved = True
-    db.session.commit()
-    return jsonify({'message': f'Therapist {therapist.name} approved successfully'})
+    data = request.get_json()
 
-# Disapprove a therapist (added endpoint)
-@app.route('/therapists/<int:id>/disapprove', methods=['PATCH'])
-def disapprove_therapist(id):
-    therapist = Therapist.query.get_or_404(id)
-    therapist.approved = False
-    db.session.commit()
-    return jsonify({'message': f'Therapist {therapist.name} disapproved successfully'})
+    if 'status' not in data:
+        return jsonify({'error': 'Status is required.'}), 400
 
-# Delete a therapist
-@app.route('/therapists/<int:id>', methods=['DELETE'])
+    status = data['status'].lower()
+    if status == 'approved':
+        therapist.status = 'approved'
+        notification_message = f'Therapist {therapist.name} has been approved.'
+    elif status == 'rejected':
+        therapist.status = 'rejected'
+        notification_message = f'Therapist {therapist.name} has been rejected.'
+    else:
+        return jsonify({'error': 'Invalid status. Use "approved" or "rejected".'}), 400
+
+    db.session.commit()
+
+    send_notification(therapist, notification_message)
+    return jsonify({'message': notification_message}), 200
+
+def send_notification(therapist, message):
+    print(f"Notification sent to {therapist.contact_number}: {message}")
+
+# Route to delete a therapist
+@app.route('/api/delete-therapist/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_therapist(id):
     therapist = Therapist.query.get_or_404(id)
-    db.session.delete(therapist)
-    db.session.commit()
-    return jsonify({'message': f'Therapist {therapist.name} deleted successfully'})
+    try:
+        db.session.delete(therapist)
+        db.session.commit()
+        return jsonify({'message': f'Therapist {therapist.name} deleted successfully'}), 204
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
-# This will create the database and tables
-with app.app_context():
-    db.create_all()
+# Admin login with authentication
+@app.route('/api/admin-login', methods=['POST'])
+def admin_login():
+    email = request.json.get('email')
+    password = request.json.get('password')
+    otp = request.json.get('otp')
+    if email == 'admin@example.com' and password == 'password' and otp == '123456':
+        access_token = create_access_token(identity=email)
+        return jsonify(access_token=access_token), 200
+    return jsonify({"msg": "Bad credentials"}), 401
 
-
-# Create a new client
-@app.route('/clients', methods=['POST'])
-def create_client():
-    data = request.get_json()  # Get data from the request body
-    new_client = Client(name=data['name'], email=data['email'])
-    db.session.add(new_client)
-    db.session.commit()
-    return jsonify({'message': 'Client added successfully'}), 201
-
-# Get all clients
-@app.route('/clients', methods=['GET'])
-def get_clients():
-    clients = Client.query.all()  # Fetch all clients from the database
-    return jsonify([{'id': c.id, 'name': c.name, 'email': c.email} for c in clients])
-
-# Delete a client
-@app.route('/clients/<int:id>', methods=['DELETE'])
-def delete_client(id):
-    client = Client.query.get_or_404(id)
-    db.session.delete(client)
-    db.session.commit()
-    return jsonify({'message': f'Client {client.name} deleted successfully'})
-
-# Create a new resource
-@app.route('/resources', methods=['POST'])
-def create_resource():
-    data = request.get_json()
-    new_resource = Resource(title=data['title'], link=data['link'])
-    db.session.add(new_resource)
-    db.session.commit()
-    return jsonify({'message': 'Resource added successfully'}), 201
-
-# Get all resources
-@app.route('/resources', methods=['GET'])
-def get_resources():
+# Manage resources with JWT
+@app.route('/api/resources', methods=['GET', 'POST'])
+@jwt_required()
+def manage_resources():
+    if request.method == 'POST':
+        data = request.get_json()
+        new_resource = Resource(title=data['title'], link=data['link'])
+        db.session.add(new_resource)
+        db.session.commit()
+        return jsonify({'message': 'Resource added successfully'}), 201
     resources = Resource.query.all()
-    return jsonify([{'id': r.id, 'title': r.title, 'link': r.link} for r in resources])
+    return jsonify([{'title': r.title, 'link': r.link} for r in resources]), 200
 
-# Delete a resource
-@app.route('/resources/<int:id>', methods=['DELETE'])
-def delete_resource(id):
-    resource = Resource.query.get_or_404(id)
-    db.session.delete(resource)
-    db.session.commit()
-    return jsonify({'message': f'Resource {resource.title} deleted successfully'})
+# Fetch clients and therapists for statistics
+@app.route('/api/clients-list', methods=['GET'])
+@jwt_required()
+def get_clients():
+    clients = Client.query.all()
+    return jsonify([{'id': c.id, 'name': c.name, 'email': c.email} for c in clients]), 200
 
-# Create a new announcement
-@app.route('/announcements', methods=['POST'])
-def create_announcement():
+@app.route('/api/therapists-list', methods=['GET'])
+@jwt_required()
+def get_therapists_list():
+    therapists = Therapist.query.all()
+    return jsonify([{'id': t.id, 'name': t.name, 'specialties': t.specialties, 'contactNumber': t.contact_number} for t in therapists]), 200
+
+# Route for announcements
+@app.route('/api/announcements', methods=['POST'])
+@jwt_required()
+def post_announcement():
     data = request.get_json()
-    new_announcement = Announcement(message=data['message'], recipient=data['recipient'])
+    new_announcement = Announcement(role=data['role'], message=data['message'])
     db.session.add(new_announcement)
     db.session.commit()
-    return jsonify({'message': 'Announcement sent successfully'}), 201
-
-# Get all announcements
-@app.route('/announcements', methods=['GET'])
-def get_announcements():
-    announcements = Announcement.query.all()
-    return jsonify([{'id': a.id, 'message': a.message, 'recipient': a.recipient} for a in announcements])
+    return jsonify({'message': 'Announcement posted successfully'}), 201

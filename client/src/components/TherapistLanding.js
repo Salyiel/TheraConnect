@@ -10,12 +10,13 @@ const TherapistLanding = () => {
         <div className="logo">
           <h1>Theraconnect</h1>
         </div>
-        <nav className="nav-links">
+        <nav className="nav-linksb">
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/login">Login</Link></li>
             <li><Link to="/signup">Sign Up</Link></li>
             <li><Link to="/about-us">About Us</Link></li>
+            <li><Link to="/adminpage"> AdminPage</Link></li>
           </ul>
         </nav>
       </header>
@@ -23,7 +24,7 @@ const TherapistLanding = () => {
       <div className="content">
         <img src={firstImage} alt="Therapist" />
         <h1 className="head">Connect with a Client Today!</h1>
-        <p className="messag">
+        <p className="message">
             Help others on their journey to mental well-being.
             Sign up today and connect with clients who need your expertise.
         </p>

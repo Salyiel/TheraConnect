@@ -129,6 +129,8 @@ const SignUp = () => {
             <option value="USA">USA</option>
             <option value="Canada">Canada</option>
             <option value="UK">UK</option>
+            <option value="Kenya">Kenya</option>
+
           </select>
           <div className="contact-inputs">
             <input

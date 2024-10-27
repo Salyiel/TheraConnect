@@ -1,51 +1,63 @@
-/* Sidebar.css */
-
+/* Sidebar container styles */
 .sidebar {
-    width: 220px; /* Adjusted width for better alignment */
+    width: 220px; /* Adjusted width for alignment */
     height: calc(100vh - 65px); /* Full height minus header height */
     background-color: #004d40; /* Sidebar background color */
     color: #ffffff; /* Text color */
     font-family: 'Plus Jakarta Sans', sans-serif; /* Font family */
     position: fixed; /* Fixed position for sidebar */
-    top: 85px; /* Slightly increased from 80px to 85px for more space below header */
+    top: 85px; /* Positioned below header */
     left: 0; /* Align to left */
-    overflow-y: auto; /* Allow vertical scrolling if content overflows */
-    padding-top: 20px; /* Added padding at the top for spacing */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    padding-top: 20px; /* Padding for spacing at the top */
 }
 
-.dashboardWrapper {
-    background-color:#004d40; /* Same as sidebar background */
-    padding: 20px; /* Add padding for the dashboard */
-    text-align: center; /* Center the text */
-}
-
+/* Sidebar link styles */
 .sidebarLink {
-    display: flex; /* Flexbox for alignment */
-    align-items: center; /* Vertically align items */
+    display: block; /* Block-level element for full width clickable links */
+    padding: 15px; /* Padding around links for better spacing */
     text-decoration: none; /* Remove underline from links */
     color: #ffffff; /* White text color */
-    padding: 15px; /* Padding around links for spacing */
-    margin-bottom: 10px; /* Add space between links */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    transition: background-color 0.3s ease-in-out; /* Smooth transition for hover effect */
 }
 
+/* Hover effect for sidebar links */
 .sidebarLink:hover {
     background-color: #e4f2f2; /* Light background color on hover */
+    color: #004d40; /* Darker text color on hover for contrast */
 }
 
+/* Active link styles for the current page */
+.sidebarLink.active {
+    background-color: #4CAF50; /* Green background color for active link */
+    color: #ffffff; /* White text color for active link */
+}
+
+/* Additional link parent classes for separation */
 .profileParent,
 .appointmentsParent,
 .messagesParent,
 .videocamParent,
 .resourcesParent {
     border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Separator line for each item */
+    margin-bottom: 15px; /* Add spacing between sidebar items */
 }
 
-/* Additional spacing */
-.profileParent,
-.appointmentsParent,
-.messagesParent,
-.videocamParent,
-.resourcesParent {
-    margin-bottom: 15px; /* Add spacing between sidebar items */
+/* Wrapper for the dashboard section */
+.dashboardWrappera {
+    background-color: #004d40; /* Consistent background color */
+    padding: 20px; /* Padding for spacing */
+    text-align: center; /* Center the text */
+}
+
+/* Dashboard specific link style */
+.dashboardb {
+    font-weight: bold; /* Bold text for dashboard */
+    font-size: 16px; /* Slightly larger font size for emphasis */
+}
+
+/* General styling for all sidebar items */
+.sidebar b {
+    font-size: 15px; /* Font size for all labels */
+    font-weight: 600; /* Make the font semi-bold for emphasis */
 }

@@ -1,106 +1,149 @@
-
 body {
   font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
 }
 
 .admin-page {
   background: #ffffff;
   color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .auth-page {
-  background-color: #1D976C;
+  background-image: url('../images/image 5.jpg');
+  background-size: cover;
+  background-position: center;
   display: flex;
-  height: 67.7rem;
+  flex-direction: column;
+  height: 100vh;
   justify-content: center;
   align-items: center;
-  min-height: 10vh;
-}
-
-.dashboardb {
-  display: flex;
-  min-height: 10vh;
+  padding: 1rem;
 }
 
 .auth-title {
   color: #004d40;
-  margin-bottom: 25rem;
-  
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  text-align: center;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .input {
   width: 100%;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
   border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.btn-approve, .btn-disapprove, .submit, .send {
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-approve {
-  width: 100%;
   background-color: #1D976C;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  margin-top: 0.5rem;
+  color: white;
 }
 
 .btn-disapprove {
-  width: 100%;
   background-color: #ff0000;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  margin-top: 0.5rem;
+  color: white;
 }
 
 .submit {
   background-color: #1D976C;
-  font-size: 1.2rem;
-  color: #fff;
+  color: white;
+  width: 100%;
+  margin-top: 1rem;
 }
 
 .send {
   background-color: #1D976C;
-  color: #fff;
+  color: white;
+  margin-top: 1rem;
 }
 
 .nava {
   background-color: #03432d;
   color: #fff;
   width: 15rem;
-  height: 67.7rem ;
+  height: 100vh;
   padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .nav-titlea {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: bold;
   margin-top: 1.5rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.nav-linksa {
+  list-style-type: none;
+  padding: 0;
 }
 
 .nav-linksa li {
-  font-size: 1.3rem ;
+  font-size: 1.3rem;
   cursor: pointer;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  color: white;
+  transition: color 0.3s ease;
+  text-align: center;
+}
+
+.nav-linksa li:hover {
+  color: #1D976C;
+}
+
+.nav-linksa li:active {
+  color: #1D976C;
+}
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
 }
 
 .content {
   flex-grow: 1;
   padding: 2rem;
+  margin-left: 15rem; /* Adjusted for fixed sidebar */
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .page-title {
-  font-size: 2rem;
+  font-size: 2.5rem; /* Increased for TheraConnect title */
   color: #1D976C;
   margin-bottom: 1rem;
 }
 
 .section-title {
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  color: #333;
 }
 
 .table {
@@ -110,8 +153,8 @@ body {
 }
 
 .table th, .table td {
-  border-bottom: 2px solid #e0e0e0;
-  padding: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0.75rem;
   text-align: left;
 }
 
@@ -119,6 +162,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
+  text-align: center;
 }
 
 .profile-card {
@@ -127,24 +171,77 @@ body {
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
 }
 
 .profile-img {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  object-fit: cover;
 }
 
 .profile-name {
   font-size: 1.25rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: #333;
 }
 
 .profile-details {
   font-size: 0.875rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: #666;
 }
 
+.resource-list {
+  list-style-type: none;
+  padding: 0;
+}
 
-  
+.resource-list li {
+  margin-bottom: 0.75rem;
+}
+
+.resource-list li a {
+  text-decoration: none;
+  color: #1D976C;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.resource-list li a:hover {
+  color: #03432d;
+}
+
+.headerb {
+  font-size: 3rem; /* For TheraConnect header */
+  font-weight: bold;
+  color: #1D976C;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* notification */
+.bell-icon {
+  font-size: 24px;
+  position: relative;
+}
+
+.bell-icon.active {
+  color: red; /* Highlight the bell when there are new notifications */
+}
+
+.new-notification-dot {
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  right: 0;
+}

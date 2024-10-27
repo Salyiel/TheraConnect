@@ -1,41 +1,41 @@
-// src/components/therapist/Dashboard.js
-
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import '../../styles/Therapist/Dashboard.css'; // Ensure this matches your CSS file
 
 const Dashboard = () => {
+    const [date, setDate] = useState(new Date());
+    const [currentTime, setCurrentTime] = useState("");
+    
     const appointments = [
         { time: "9:41 AM", name: "Ella Smith", service: "Counselling" },
         { time: "11:41 AM", name: "Ella Smith", service: "Counselling" },
     ];
 
-    const [date, setDate] = useState(new Date());
-    const [currentTime, setCurrentTime] = useState("");
-
+    // Update the current time every minute
     useEffect(() => {
         const updateCurrentTime = () => {
             const now = new Date();
             setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
         };
 
-        // Update the current time every minute
-        const intervalId = setInterval(updateCurrentTime, 60000);
-        updateCurrentTime(); // Initial call
+        const intervalId = setInterval(updateCurrentTime, 60000); // Update every minute
+        updateCurrentTime(); // Initial call to set the time right away
 
-        return () => clearInterval(intervalId); // Cleanup
+        return () => clearInterval(intervalId); // Cleanup interval on component unmount
     }, []);
 
+    // Handle calling action
     const handleCall = (name) => {
         alert(`Calling ${name}...`);
     };
 
-    const handleVideo = (name) => {
+    // Handle video call action
+    const handleVideo = () => {
         window.open('https://meet.google.com/', '_blank');
     };
 
     return (
-        <div className="dashboard-container">
+        <div className="dashboard-containera">
             <div className="greeting-section">
                 <h2>Hello, Walls Ada</h2>
                 <div className="profile-photo">
@@ -70,7 +70,7 @@ const Dashboard = () => {
                             </div>
                             <div className="appointment-actions">
                                 <button className="call-button" onClick={() => handleCall(appointment.name)}>📞</button>
-                                <button className="video-button" onClick={() => handleVideo(appointment.name)}>📹</button>
+                                <button className="video-button" onClick={handleVideo}>📹</button>
                             </div>
                         </div>
                     ))

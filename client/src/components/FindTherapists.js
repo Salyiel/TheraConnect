@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../styles/FindTherapists.css";
 
 const FindTherapists = () => {
-  const [therapists, setTherapists] = useState([]);
+  const [therapists, setTherapists] = useState([
+    {
+      id: 1,
+      name: "Try Walsh",
+      qualification: "Licensed Clinical Psychologist",
+      experience: "5 years",
+      location: "Nairobi, Kenya",
+      image: "path/to/placeholder/image.jpg", // Replace with an actual image path
+      isApproved: true // Mark as approved
+    }
+  ]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -13,8 +23,23 @@ const FindTherapists = () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_FLASK_API_URL}/api/therapists?page=${currentPage}`);
         const data = await response.json();
-        setTherapists(data.therapists);
-        setTotalPages(data.total_pages);
+        
+        // Filter therapists to include only those approved by admin
+        const approvedTherapists = data.therapists.filter(therapist => therapist.isApproved);
+        
+        // If no therapists are fetched from API, fallback to the dummy therapist
+        setTherapists(approvedTherapists.length > 0 ? approvedTherapists : [
+          {
+            id: 1,
+            name: "Try Walsh",
+            qualification: "Licensed Clinical Psychologist",
+            experience: "5 years",
+            location: "Nairobi, Kenya",
+            image: "path/to/placeholder/image.jpg", // Replace with an actual image path
+            isApproved: true
+          }
+        ]);
+        setTotalPages(data.total_pages); // Keep this as is if the total pages are based on all therapists
       } catch (error) {
         console.error("Error fetching therapists:", error);
       }
@@ -87,7 +112,7 @@ const FindTherapists = () => {
             </div>
           ))
         ) : (
-          <p>No therapists found.</p>
+          <p>No approved therapists found.</p> // Updated message for no approved therapists
         )}
       </div>
 

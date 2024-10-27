@@ -8,9 +8,13 @@ const Calendar = ({ selectedDate, onDateChange }) => {
     };
 
     const generateDates = () => {
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        // Get the number of days in the current month
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
         let dates = [];
-        for (let i = 1; i <= 30; i++) {
-            const date = new Date(today.getFullYear(), today.getMonth(), i);
+        for (let i = 1; i <= daysInMonth; i++) {
+            const date = new Date(year, month, i);
             dates.push(date);
         }
         return dates;
@@ -18,7 +22,7 @@ const Calendar = ({ selectedDate, onDateChange }) => {
 
     return (
         <div className="calendar-container">
-            <h3>June 2024</h3>
+            <h3>{today.toLocaleString('default', { month: 'long' })} {today.getFullYear()}</h3>
             <div className="calendar-grid">
                 {generateDates().map(date => (
                     <div 

@@ -1,4 +1,13 @@
-.appointments-containera {
+.appointments-layout {
+    display: flex; /* Use flexbox for layout */
+}
+
+.sidebar {
+    width: 250px; /* Fixed width for the sidebar */
+    background-color:#004d40; /* Background color for the sidebar */
+}
+
+.appointments-container {
     width: 70%; /* Limit width for better readability */
     margin: 70px auto; /* Center container */
     padding: 30px; /* Padding for the main container */
@@ -7,7 +16,7 @@
     background-color: #ffffff; /* White background */
 }
 
-.appointments-headera {
+.appointments-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
@@ -24,7 +33,7 @@
 
 .schedule-btn {
     padding: 12px 20px;
-    background-color: #00d1b2;
+    background-color: #00d1b2; /* Button color */
     color: white;
     border: none;
     border-radius: 5px;
@@ -34,35 +43,35 @@
 }
 
 .schedule-btn:hover {
-    background-color: #00b29c;
+    background-color: #00b29c; /* Darker shade on hover */
 }
 
-.appointments-sectiona {
+.appointments-section {
     margin-bottom: 30px;
     padding: 20px; /* Added padding */
     border: 1px solid #ddd;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; /* Light background for sections */
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+    width: 100%; /* Full width for tables */
+    border-collapse: collapse; /* Collapse borders */
+    margin-bottom: 20px; /* Space below tables */
 }
 
 th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    padding: 12px; /* Padding for cells */
+    text-align: left; /* Align text to the left */
+    border-bottom: 1px solid #ddd; /* Bottom border for rows */
 }
 
 th {
-    background-color: #f4f4f4;
+    background-color: #f4f4f4; /* Header background color */
 }
 
 .today-appointment {
-    color: red;
+    color: red; /* Color for today's appointment */
     font-weight: bold; /* Emphasize today's appointment */
 }
 
@@ -72,14 +81,14 @@ th {
 
 .action-btn {
     padding: 10px 15px; /* Consistent button size */
-    background-color: #00d1b2;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
+    background-color: #00d1b2; /* Button color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer on hover */
+    font-size: 14px; /* Font size */
     transition: background-color 0.3s; /* Smooth transition */
-    margin-right: 10px; /* Add space between buttons */
+    margin-right: 10px; /* Space between buttons */
 }
 
 .action-btn:last-child {
@@ -87,24 +96,22 @@ th {
 }
 
 .action-btn:hover {
-    background-color: #00b29c;
+    background-color: #00b29c; /* Darker shade on hover */
 }
 
 .view-all-btn {
-    display: block;
-    margin: 10px auto;
-    background-color: #00d1b2;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
+    display: block; /* Block display for the button */
+    margin: 10px auto; /* Centered button */
+    background-color: #00d1b2; /* Button color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    padding: 12px 20px; /* Padding */
+    cursor: pointer; /* Pointer on hover */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
     transition: background-color 0.3s; /* Smooth transition */
 }
 
 .view-all-btn:hover {
-    background-color: #00b29c;
+    background-color: #00b29c; /* Darker shade on hover */
 }
-
-

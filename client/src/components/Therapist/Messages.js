@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../../styles/Therapist/Messages.css'; // Importing the CSS for styling
+import Sidebar from './Sidebar';
 
 const Messages = () => {
     const [messages, setMessages] = useState([
@@ -29,31 +30,34 @@ const Messages = () => {
 
     return (
         <div className="messages-container">
-            <div className="message-list">
-                {messages.map((message) => (
-                    <div key={message.id} className={`message ${message.sender}`}>
-                        <div className="message-text">{message.text}</div>
-                        <div className="message-time">{message.time}</div>
-                    </div>
-                ))}
-                <div ref={messageEndRef} /> {/* For auto-scrolling */}
-            </div>
+            <Sidebar /> {/* Render Sidebar here */}
+            <div className="messages-content">
+                <div className="message-list">
+                    {messages.map((message) => (
+                        <div key={message.id} className={`message ${message.sender}`}>
+                            <div className="message-text">{message.text}</div>
+                            <div className="message-time">{message.time}</div>
+                        </div>
+                    ))}
+                    <div ref={messageEndRef} /> {/* For auto-scrolling */}
+                </div>
 
-            <div className="message-input-container">
-                <input
-                    type="text"
-                    className="message-input"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message..."
-                />
-                <button
-                    className="send-button"
-                    onClick={handleSendMessage}
-                    disabled={!newMessage.trim()} // Disable button if input is empty
-                >
-                    Send
-                </button>
+                <div className="message-input-container">
+                    <input
+                        type="text"
+                        className="message-input"
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Type your message..."
+                    />
+                    <button
+                        className="send-button"
+                        onClick={handleSendMessage}
+                        disabled={!newMessage.trim()} // Disable button if input is empty
+                    >
+                        Send
+                    </button>
+                </div>
             </div>
         </div>
     );

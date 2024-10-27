@@ -11,11 +11,37 @@ const AdminPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
+  const [therapists, setTherapists] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [notification, setNotification] = useState(''); // Therapist form submission notification
+  const [announcementMessage, setAnnouncementMessage] = useState(''); // For announcements
+  const [announcementRole, setAnnouncementRole] = useState('therapist'); // Role selection
+  const [statistics, setStatistics] = useState({
+    clients: 10, // Dummy data
+    therapists: 5, // Dummy data
+    users: 15 // Dummy data (clients + therapists)
+  });
 
   useEffect(() => {
-    axios.get('http://localhost:5000/resources')
+    // Fetch resources
+    axios.get('http://127.0.0.1:5000/resources')
       .then(response => setResources(response.data))
       .catch(error => console.error('Error fetching resources:', error));
+
+    // Fetch pending therapists for admin approval
+    axios.get('/api/therapist-pending')
+      .then(response => setTherapists(response.data))
+      .catch(error => console.error('Error fetching pending therapists:', error));
+
+    // Fetch clients and therapists for statistics
+    axios.get('/api/clients')
+      .then(response => setClients(response.data))
+      .catch(error => console.error('Error fetching clients:', error));
+    
+    axios.get('/api/therapists')
+      .then(response => setTherapists(response.data))
+      .catch(error => console.error('Error fetching therapists:', error));
+
   }, []);
 
   const handleAuthSubmit = (event) => {
@@ -30,7 +56,6 @@ const AdminPage = () => {
     })
     .then(response => {
       alert(response.data.message);
-      // Optionally refresh the list of resources after posting
       setResources([...resources, { title: resourceTitle, link: resourceLink }]);
       setResourceTitle('');
       setResourceLink('');
@@ -38,116 +63,132 @@ const AdminPage = () => {
     .catch(error => console.error('Error posting resource:', error));
   };
 
+  const handleApproveDisapprove = (id, action) => {
+    axios.patch(`/api/therapist-status/${id}`, { status: action })
+      .then(response => {
+        alert(response.data.message);
+        setTherapists(therapists.filter(t => t.id !== id));
+      })
+      .catch(error => console.error('Error updating therapist status:', error));
+  };
+
+  const handleAnnouncementSubmit = () => {
+    axios.post('/api/announcements', {
+      role: announcementRole,
+      message: announcementMessage
+    })
+    .then(response => {
+      alert('Announcement sent successfully!');
+      setAnnouncementMessage('');
+    })
+    .catch(error => console.error('Error sending announcement:', error));
+  };
+
   const renderPage = () => {
     switch (activePage) {
       case 'therapists':
         return (
           <div id="therapists">
-            <h2 className="page-title">Therapists</h2>
+            <h2 className="page-title">Pending Therapist Approvals</h2>
             <table className="table">
               <thead>
                 <tr>
                   <th>Name</th>
                   <th>Specialty</th>
                   <th>Contact</th>
-                  <th>License Number</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Dr. John Doe</td>
-                  <td>Psychiatrist</td>
-                  <td>john@example.com</td>
-                  <td>123456</td>
-                </tr>
-                {/* Add other therapist rows here */}
+                {therapists.map(therapist => (
+                  <tr key={therapist.id}>
+                    <td>{therapist.name}</td>
+                    <td>{therapist.specialties}</td>
+                    <td>{therapist.contactNumber}</td>
+                    <td>
+                      <button className="btn-approve" onClick={() => handleApproveDisapprove(therapist.id, 'approved')}>Approve</button>
+                      <button className="btn-disapprove" onClick={() => handleApproveDisapprove(therapist.id, 'rejected')}>Disapprove</button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-            <div className="profile-cards">
-              <div className="profile-card">
-                <img src="https://placehold.co/150x150" alt="Dr. John Doe" className="profile-img" />
-                <h3 className="profile-name">Dr. John Doe</h3>
-                <p className="profile-details">Psychiatrist</p>
-                <p className="profile-details">john@example.com</p>
-                <p className="profile-details">License: 123456</p>
-                <div className="profile-actions">
-                  <button className="btn-approve">Approve</button>
-                  <button className="btn-disapprove">Disapprove</button>
-                </div>
-              </div>
-              {/* Add other profile cards here */}
-            </div>
+            {notification && <div className="notification">{notification}</div>}
           </div>
         );
-      case 'clients':
-        return (
-          <div id="clients">
-            <h2 className="page-title">Clients</h2>
-            <div className="profile-cards">
-              <div className="profile-card">
-                <img src="https://placehold.co/150x150" alt="Jane Smith" className="profile-img" />
-                <h3 className="profile-name">Jane Smith</h3>
-                <p className="profile-details">janesmith@example.com</p>
-                <p className="profile-details">Client ID: 789456</p>
-              </div>
-              {/* Add other client cards here */}
-            </div>
-          </div>
-        );
+      
       case 'statistics':
         return (
           <div id="statistics">
-            <h2 className="page-title">Statistics</h2>
+            <h2 className="page-title">Platform Statistics</h2>
+            <ul>
+              <li>Clients: {statistics.clients}</li>
+              <li>Therapists: {statistics.therapists}</li>
+              <li>Total Users: {statistics.users}</li>
+            </ul>
+
             <h3 className="section-title">Therapists</h3>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>License Number</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Dr. John Doe</td>
-                  <td>123456</td>
-                </tr>
-                {/* Add other therapist rows here */}
-              </tbody>
-            </table>
+            <ul className="therapist-list">
+              {therapists.length > 0 ? (
+                therapists.map(therapist => (
+                  <li key={therapist.id}>
+                    <p><strong>Name:</strong> {therapist.name}</p>
+                    <p><strong>Specialty:</strong> {therapist.specialties}</p>
+                    <p><strong>Contact:</strong> {therapist.contactNumber}</p>
+                  </li>
+                ))
+              ) : (
+                <p>No therapists available.</p>
+              )}
+            </ul>
+
             <h3 className="section-title">Clients</h3>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>janesmith@example.com</td>
-                </tr>
-                {/* Add other client rows here */}
-              </tbody>
-            </table>
+            <ul className="client-list">
+              {clients.length > 0 ? (
+                clients.map(client => (
+                  <li key={client.id}>
+                    <p><strong>Name:</strong> {client.name}</p>
+                    <p><strong>Email:</strong> {client.email}</p>
+                  </li>
+                ))
+              ) : (
+                <p>No clients available.</p>
+              )}
+            </ul>
           </div>
         );
+      
       case 'announcements':
         return (
           <div id="announcements">
-            <h2 className="page-title">Announcements</h2>
+            <h2 className="page-title">Send Announcement</h2>
             <div className="form-group">
-              <label htmlFor="message">Message</label>
-              <textarea id="message" rows="4" placeholder="Type your announcement here..." className="input"></textarea>
-            </div>
-            <div className="form-group">
-              <label htmlFor="recipient">Send To</label>
-              <select id="recipient" className="input">
-                <option value="therapists">Therapists</option>
-                <option value="clients">Clients</option>
+              <label htmlFor="announcementRole">Role</label>
+              <select
+                id="announcementRole"
+                value={announcementRole}
+                onChange={(e) => setAnnouncementRole(e.target.value)}
+              >
+                <option value="therapist">Therapists</option>
+                <option value="client">Clients</option>
               </select>
             </div>
-            <button className="btn send">Send Announcement</button>
+            <div className="form-group">
+              <label htmlFor="announcementMessage">Message</label>
+              <textarea
+                id="announcementMessage"
+                className="input"
+                placeholder="Enter your announcement"
+                value={announcementMessage}
+                onChange={(e) => setAnnouncementMessage(e.target.value)}
+              />
+            </div>
+            <button className="btn send" onClick={handleAnnouncementSubmit}>
+              Send Announcement
+            </button>
           </div>
         );
+
       case 'resources':
         return (
           <div id="resources">
@@ -177,7 +218,6 @@ const AdminPage = () => {
             <button type="button" className="btn send" onClick={handlePostResource}>
               Post Resource
             </button>
-            {/* List of resources will be shown below */}
             <h3 className="section-title">Posted Resources</h3>
             <ul className="resource-list">
               {resources.length > 0 ? (
@@ -233,7 +273,7 @@ const AdminPage = () => {
                 type="text"
                 id="otp"
                 className="input"
-                placeholder="Enter OTP"
+                placeholder="Enter your OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
               />
@@ -242,22 +282,20 @@ const AdminPage = () => {
           </form>
         </div>
       ) : (
-        <div className="dashboard">
-          <nav className="nav">
-            <h2 className="nav-title">TheraConnect</h2>
-            <ul className="nav-links">
-              <li onClick={() => setActivePage('therapists')}>Therapists</li>
-              <li onClick={() => setActivePage('clients')}>Clients</li>
+        <div className="content">
+          <nav className="sidebar">
+            <ul>
+              <li onClick={() => setActivePage('therapists')}>Pending Therapists</li>
               <li onClick={() => setActivePage('statistics')}>Statistics</li>
               <li onClick={() => setActivePage('announcements')}>Announcements</li>
               <li onClick={() => setActivePage('resources')}>Resources</li>
             </ul>
           </nav>
-          <div className="content">{renderPage()}</div>
+          <div className="main-content">{renderPage()}</div>
         </div>
       )}
     </div>
   );
 };
 
-export default AdminPage
+export default AdminPage;

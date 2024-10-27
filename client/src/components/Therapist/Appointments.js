@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import '../../styles/Therapist/Appointments.css'; // Ensure this file exists for styling
-
-
+import Sidebar from './Sidebar'; // Import the Sidebar component (you need to create this component)
 
 const Appointments = () => {
   const [appointments] = useState([
@@ -46,25 +45,30 @@ const Appointments = () => {
       status: 'Request',
     },
   ]);
-   
-    const [searchTerm, setSearchTerm] = useState('');
-    const today = new Date().toISOString().split('T')[0];
-  
-    const sortedAppointments = appointments.sort((a, b) => new Date(a.date) - new Date(b.date));
-    const filteredAppointments = sortedAppointments.filter(appointment =>
-      appointment.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      appointment.visitType.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  
-    const handleAction = (id, action) => {
-      alert(`${action} appointment request ID: ${id}`);
-      // Logic for the action (send reminder, accept, reschedule)
-    };
-  
-    return (
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const today = new Date().toISOString().split('T')[0];
+
+  const sortedAppointments = appointments.sort((a, b) => new Date(a.date) - new Date(b.date));
+  const filteredAppointments = sortedAppointments.filter(appointment =>
+    appointment.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    appointment.visitType.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAction = (id, action) => {
+    alert(`${action} appointment request ID: ${id}`);
+    // Logic for the action (send reminder, accept, reschedule)
+  };
+
+  return (
+    <div className="appointments-layout">
+      {/* Sidebar component */}
+      <Sidebar />
+
+      {/* Main content section */}
       <div className="appointments-container">
         <h2>Appointments</h2>
-  
+
         <div className="appointments-header">
           <input
             type="text"
@@ -77,7 +81,7 @@ const Appointments = () => {
             Schedule an Appointment
           </button>
         </div>
-  
+
         {/* Upcoming Appointments */}
         <div className="appointments-section">
           <h3>Upcoming Appointments</h3>
@@ -117,7 +121,7 @@ const Appointments = () => {
             <button className="view-all-btn">View All Upcoming</button>
           )}
         </div>
-  
+
         {/* Appointment Requests */}
         <div className="appointments-section">
           <h3>Appointment Requests</h3>
@@ -154,7 +158,7 @@ const Appointments = () => {
             <button className="view-all-btn">View All Requests</button>
           )}
         </div>
-  
+
         {/* Previous Appointments */}
         <div className="appointments-section">
           <h3>Previous Appointments</h3>
@@ -187,8 +191,8 @@ const Appointments = () => {
           )}
         </div>
       </div>
-    );
-  };
-  
-  export default Appointments;
-  
+    </div>
+  );
+};
+
+export default Appointments;

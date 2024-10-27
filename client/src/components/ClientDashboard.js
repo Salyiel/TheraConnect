@@ -183,7 +183,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-containerb">
       <header className="dashboard-header">
         <h1 className="logo">Theraconnect</h1>
         <nav className="dashboard-nav">

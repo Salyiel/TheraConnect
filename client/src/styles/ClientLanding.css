@@ -38,22 +38,22 @@ body {
 
 .nav-linksb {
   padding: 5px;
-  color: #1D976C;
+  color:#d0dfda;
 }
 
 .nav-linksb ul {
   list-style: none;
   display: flex;
   gap: 20px;
-  color: #1D976C;
+  color: #fff;
 }
 
 .nav-linksb ul li {
-  color: #1D976C;
+  color: #fff;
 }
 
 .nav-links a {
-  color: #1D976C;;
+  color: #fff;
   text-decoration: none;
   transition: color 0.3s;
 }
@@ -132,6 +132,7 @@ body {
 .messag {
   padding-bottom: 10px;
   font-size: 25px;
+
 }
 
 img {

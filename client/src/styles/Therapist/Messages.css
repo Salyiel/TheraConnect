@@ -1,8 +1,7 @@
 .messages-container {
     display: flex;
-    flex-direction: column;
     height: 80%; /* Adjust height as needed */
-    width: 400px; /* Set a specific width for the chat window */
+    width: 650px; /* Adjust width to accommodate sidebar and chat */
     border: 1px solid #ccc;
     border-radius: 5px;
     overflow: hidden;
@@ -13,8 +12,20 @@
     transform: translate(-50%, -50%); /* Adjust position */
 }
 
+.sidebar {
+    width: 250px; /* Width of the sidebar */
+    background-color:#004d40; /* Example background color */
+    padding: 10px; /* Optional padding for sidebar */
+}
+
+.messages-content {
+    flex: 1; /* Takes the remaining space */
+    display: flex;
+    flex-direction: column;
+}
+
 .message-list {
-    flex: 1;
+    flex: 1; /* Allow the message list to take available space */
     padding: 10px;
     overflow-y: auto; /* Scrollable area */
 }
@@ -34,18 +45,19 @@
 .message-input-container {
     display: flex;
     padding: 10px;
+    border-top: 1px solid #ccc; /* Optional border for separation */
 }
 
 .message-input {
-    flex: 1;
-    padding: 10px;
+    flex: 1; /* Allow input to take available space */
+    padding: 10px; /* Padding for the input field */
     border: 1px solid #ccc;
     border-radius: 5px;
+    margin-right: 10px; /* Margin for spacing between input and button */
 }
 
 .send-button {
-    margin-left: 10px;
-    padding: 10px;
+    padding: 10px; /* Button styling */
     background-color: #4CAF50; /* Green background */
     color: white;
     border: none;
