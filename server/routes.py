@@ -1086,62 +1086,90 @@ def get_primary_therapist(user_id):
 # Endpoint to get all clients
 @app.route('/api/clients', methods=['GET'])
 def get_clients():
-    clients = Client.query.all()
-    client_list = [
-        {
-            "id": client.id,
-            "name": client.name,
-            "lastVisit": client.last_visit,
-            "condition": client.condition,
-            "phone": client.phone,
-            "email": client.email
-        } for client in clients
-    ]
-    return jsonify(client_list), 200
+    therapist_id = request.args.get('therapist_id')
 
-# Endpoint to schedule an appointment
+    # Check if therapist_id is provided
+    if not therapist_id:
+        return jsonify({"error": "Therapist ID is required"}), 400
+
+    try:
+        # Query clients assigned to the specified therapist
+        clients = Client.query.filter_by(therapist_id=therapist_id).all()
+        
+        # Format the clients into a list of dictionaries
+        client_list = [
+            {
+                "id": client.id,
+                "name": client.name,
+                "lastVisit": client.last_visit.strftime('%Y-%m-%d') if client.last_visit else None,
+                "condition": client.condition,
+                "phone": client.phone,
+                "email": client.email
+            } for client in clients
+        ]
+        
+        return jsonify(client_list), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
 @app.route('/api/appointments', methods=['POST'])
 def schedule_appointment():
     data = request.json
-    client_id = data['clientId']
-    appointment_date = datetime.strptime(data['appointmentDate'], '%Y-%m-%d').date()
-    
-    new_appointment = Appointment(client_id=client_id, appointment_date=appointment_date)
+    client_id = data.get('client_id')
+    therapist_id = data.get('therapist_id')
+    appointment_date = datetime.strptime(data['appointment_date'], '%Y-%m-%d').date()
+    appointment_time = data.get('appointment_time')
+
+    if not client_id or not therapist_id or not appointment_time:
+        return jsonify({"error": "Client ID, Therapist ID, date, and time are required."}), 400
+
+    # Create new appointment
+    new_appointment = Appointment(
+        client_id=client_id,
+        therapist_id=therapist_id,
+        appointment_date=appointment_date,
+        appointment_time=appointment_time
+    )
     db.session.add(new_appointment)
     db.session.commit()
-    return jsonify({"message": "Appointment scheduled successfully"}), 201
 
-# Endpoint to get appointments for a client
-@app.route('/api/appointments/<int:client_id>', methods=['GET'])
+    return jsonify({"message": "Appointment scheduled successfully", "appointment_id": new_appointment.id}), 201
+@app.route('/api/appointments/client/<int:client_id>', methods=['GET'])
 def get_client_appointments(client_id):
     appointments = Appointment.query.filter_by(client_id=client_id).all()
     appointment_list = [
         {
             "id": appt.id,
-            "appointmentDate": appt.appointment_date.strftime('%Y-%m-%d')
-        } for appt in appointments
+            "appointmentDate": appt.appointment_date.strftime('%Y-%m-%d'),
+            "appointmentTime": appt.appointment_time,
+            "therapist_id": appt.therapist_id,
+            "therapist_name": appt.therapist.name
+        }
+        for appt in appointments
     ]
     return jsonify(appointment_list), 200
 
 
-# Get all resources
-@app.route('/api/resources', methods=['GET'])
-def get_resources():
-    resources = Resource.query.all()
-    return jsonify([resource.to_dict() for resource in resources]), 200
+# # Get all resources
+# @app.route('/api/resources', methods=['GET'])
+# def get_resources():
+#     resources = Resource.query.all()
+#     return jsonify([resource.to_dict() for resource in resources]), 200
 
-# Add a new resource
-@app.route('/api/resources', methods=['POST'])
-def add_resource():
-    data = request.json
-    new_resource = Resource(
-        title=data['title'],
-        topic=data['topic'],
-        url=data['url']
-    )
-    db.session.add(new_resource)
-    db.session.commit()
-    return jsonify(new_resource.to_dict()), 201
+# # Add a new resource
+# @app.route('/api/resources', methods=['POST'])
+# def add_resource():
+#     data = request.json
+#     new_resource = Resource(
+#         title=data['title'],
+#         topic=data['topic'],
+#         url=data['url']
+#     )
+#     db.session.add(new_resource)
+#     db.session.commit()
+#     return jsonify(new_resource.to_dict()), 201
 
 # *****************************Admin Page**************************************************************************
 @app.route('/')
@@ -1235,31 +1263,75 @@ def admin_login():
         return jsonify(access_token=access_token), 200
     return jsonify({"msg": "Bad credentials"}), 401
 
-# Manage resources with JWT
+
 @app.route('/api/resources', methods=['GET', 'POST'])
 @jwt_required()
 def manage_resources():
     if request.method == 'POST':
+        # Get the JSON data
         data = request.get_json()
-        new_resource = Resource(title=data['title'], link=data['link'])
+        # Add a new resource (by therapist or admin)
+        new_resource = Resource(
+            title=data['title'],
+            topic=data.get('topic', ''),  # Optional if topic is not mandatory
+            url=data['url'],  # Use 'url' to stay consistent
+            is_approved=False  # Default to False for new resources
+        )
         db.session.add(new_resource)
         db.session.commit()
-        return jsonify({'message': 'Resource added successfully'}), 201
-    resources = Resource.query.all()
-    return jsonify([{'title': r.title, 'link': r.link} for r in resources]), 200
+        
+        # Notify the admin (e.g., via an alert or notification service)
+        notify_admin_new_resource(new_resource)  # Implement this function based on your notification setup
+        
+        return jsonify({'message': 'Resource added and pending admin approval'}), 201
 
-# Fetch clients and therapists for statistics
-@app.route('/api/clients-list', methods=['GET'])
-@jwt_required()
-def get_clients():
-    clients = Client.query.all()
-    return jsonify([{'id': c.id, 'name': c.name, 'email': c.email} for c in clients]), 200
+    # If it's a GET request, return all resources or just approved ones
+    resources = Resource.query.filter_by(is_approved=True).all() if request.args.get('admin') else Resource.query.all()
+    return jsonify([{'title': r.title, 'link': r.url, 'topic': r.topic} for r in resources]), 200
 
-@app.route('/api/therapists-list', methods=['GET'])
+# Helper function to notify admin of new resource
+def notify_admin_new_resource(resource):
+    # Your logic to notify the admin, e.g., via email, dashboard update, etc.
+    pass
+
+# Updated get_users endpoint to filter users by role ('client' or 'therapist')
+@app.route('/api/users', methods=['GET'])
 @jwt_required()
-def get_therapists_list():
-    therapists = Therapist.query.all()
-    return jsonify([{'id': t.id, 'name': t.name, 'specialties': t.specialties, 'contactNumber': t.contact_number} for t in therapists]), 200
+def get_users():
+    role = request.args.get('role')
+    
+    # Validate role parameter
+    if role not in ['client', 'therapist']:
+        return jsonify({"error": "Role must be 'client' or 'therapist'"}), 400
+
+    # Query users based on the specified role
+    users = User.query.filter_by(role=role).all()
+    
+    # Prepare response based on the role
+    if role == 'client':
+        users_list = [
+            {
+                'id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'phone': user.phone,
+                'therapist_id': user.therapist_id,  # therapist_id if assigned
+                'location': user.location
+            } for user in users
+        ]
+    elif role == 'therapist':
+        users_list = [
+            {
+                'id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'phone': user.phone,
+                'location': user.location,
+                'client_count': len(user.clients)  # Counts associated clients for therapists
+            } for user in users
+        ]
+    
+    return jsonify(users_list), 200
 
 # Route for announcements
 @app.route('/api/announcements', methods=['POST'])
