@@ -174,7 +174,7 @@ User Stories
 
 Future Features
 
-	•	Video Conferencing Integration: Enable virtual therapy sessions.
+	•	Video Conferencing Integration: Enable smoother virtual therapy sessions.
 	•	Advanced Search Filters: Improve therapist search capabilities.
 	•	Mobile Application: Develop a mobile version of TheraConnect.
 
