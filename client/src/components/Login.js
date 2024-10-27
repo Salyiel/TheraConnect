@@ -9,7 +9,7 @@ const Login = () => {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [otpMessage, setOtpMessage] = useState('');
-  const [loading, setLoading] = useState(false); // State for loading
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const clearMessages = () => {
@@ -19,17 +19,30 @@ const Login = () => {
 
   const handleRequestOtp = async () => {
     clearMessages();
-    setLoading(true); // Set loading to true
+    setLoading(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_FLASK_API_URL}/api/login`, {
+      // Check if the user is an admin
+      const identifier = email === 'admin' || email === 'admin3' ? email : null;
+
+      // Prepare the request URL based on whether it's an admin or a normal user
+      const requestUrl = identifier
+        ? `${process.env.REACT_APP_FLASK_API_URL}/api/request-admin-otp`
+        : `${process.env.REACT_APP_FLASK_API_URL}/api/login`;
+
+      // Prepare the request body based on whether it's an admin or a normal user
+      const body = identifier
+        ? { identifier } // For admin, just pass the email field
+        : { email, password }; // For normal users, include the password
+
+      const response = await fetch(requestUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(body),
       });
 
-      const data = await response.json(); // Capture the response data
+      const data = await response.json();
 
       if (!response.ok) {
         setError(data.error || 'Login failed. Please try again.');
@@ -38,58 +51,87 @@ const Login = () => {
 
       setOtpRequested(true);
       setOtpMessage('OTP sent to your email! Please check your inbox.');
-      
     } catch (err) {
       setError('An unexpected error occurred.');
     } finally {
-      setLoading(false); // Set loading to false
+      setLoading(false);
     }
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     clearMessages();
-    setLoading(true); 
-  
+    setLoading(true);
+
     try {
-      const response = await fetch(`${process.env.REACT_APP_FLASK_API_URL}/api/verify-otp`, {
+      // Check if the user is an admin
+    const identifier = email === 'admin' || email === 'admin a' || email === 'admin t' || email === 'admin b' || email === 'admin s' ? email : null;
+
+      const requestUrl = identifier
+        ? `${process.env.REACT_APP_FLASK_API_URL}/api/verify-admin-otp`
+        : `${process.env.REACT_APP_FLASK_API_URL}/api/verify-otp`;
+
+      const body = identifier
+        ? { identifier, temporary_password: password, otp } // For admin
+        : { email, otp }; // For normal users
+
+      const response = await fetch(requestUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify(body),
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         setError(data.error || 'OTP verification failed. Please try again.');
         return;
       }
-  
+
       // Log the user data
       console.log('user data:', data.user);
-  
-      // Ensure the response contains token and user details
+
       if (data.token && data.user) {
         sessionStorage.setItem('token', data.token);
         sessionStorage.setItem('userId', data.user.id);
         sessionStorage.setItem('userName', data.user.name);
         sessionStorage.setItem('userEmail', data.user.email);
-        sessionStorage.setItem('therapist', data.user.therapist)
-  
+        sessionStorage.setItem('therapist', data.user.therapist);
+        sessionStorage.setItem('role', data.user.role);
+
         // Check if user is a therapist and their verification status
         if (data.user.role === 'therapist') {
-          if (data.user.is_verified) {
-            // Navigate to therapist's landing page
-            navigate('/therapist-landing'); // Update to your therapist landing page route
+          if (data.user.isVerified === 'yes') {
+            navigate('/therapist');
+          } else if (data.user.isVerified === 'waiting') {
+            navigate('/waiting');
+          } else if (data.user.isVerified === 'banned') {
+            navigate('/banned');
+          } else if (data.user.isVerified === 'terminated') {
+            sessionStorage.removeItem('token');
+            navigate('/');
           } else {
-            // Navigate to therapist info page
             navigate('/therapist-info');
           }
-        } else {
-          // Navigate to the role-specific landing page for non-therapists
-          navigate(`/${data.user.role}`);
+        } else if (data.role === 'admin'){
+          navigate('/admin')
+        }else {
+          if (data.user.isVerified === 'banned') {
+            navigate('/banned')
+          } else if (data.user.isVerified === 'terminated') {
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('userId');
+            sessionStorage.removeItem('userName');
+            sessionStorage.removeItem('userEmail');
+            sessionStorage.removeItem('therapist');
+            sessionStorage.removeItem('role');
+            navigate('/');
+          } else{
+            navigate(`/${data.user.role}`);
+          }
+          
         }
       } else {
         setError('Invalid response from server. Missing user details.');
@@ -97,11 +139,9 @@ const Login = () => {
     } catch (err) {
       setError('An unexpected error occurred during OTP verification.');
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
-
 
   return (
     <div className="login-page">
@@ -126,20 +166,19 @@ const Login = () => {
         <div className="login-card">
           <form className="login-form" onSubmit={otpRequested ? handleVerifyOtp : handleRequestOtp}>
             <input
-              type="email"
+              type="text" // Change to text to allow 'admin' or 'admin3'
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             <div className="otp-section">
               <input
                 type="text"
@@ -153,7 +192,7 @@ const Login = () => {
                 type="button"
                 className="request-otp-btn"
                 onClick={handleRequestOtp}
-                disabled={otpRequested || loading} // Disable if OTP requested or loading
+                disabled={otpRequested || loading}
               >
                 {loading ? 'Requesting...' : 'Request OTP'}
               </button>

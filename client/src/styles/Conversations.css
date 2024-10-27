@@ -1,0 +1,76 @@
+/* src/components/Conversations.css */
+.conversations-container {
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    background-color: #02320a;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.new-conversation-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.new-conversation-button:hover {
+    background-color: #218838;
+}
+
+.conversation-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.conversation-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.conversations-container h2, p, span {
+    color: black;
+} 
+
+.conversations-container span{
+    color: black;
+}
+
+.no-conversations-message{
+    color: black;
+}
+
+.participant-dropdown {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 5px;
+    z-index: 10;
+    width: 250px; /* Adjust width as needed */
+}
+
+.participant-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.participant-dropdown li {
+    margin-bottom: 5px;
+}
+
+.create-conversation-button {
+    margin-top: 10px;
+}

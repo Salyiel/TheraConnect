@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Calendar from './Calendar';
 import { useParams } from 'react-router-dom';
 import SetPrimaryTherapistModal from './SetPrimaryTherapistModal'; // Import the modal
+import "../styles/Booking.css"
 
 const BookingPage = ({ therapistName }) => {
     const { id } = useParams(); // Get therapistId from URL parameters

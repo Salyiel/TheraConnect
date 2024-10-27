@@ -1,0 +1,10 @@
+.appointments-container {
+    height: 100%
+}
+
+.calendar-section {
+    margin-top: auto
+}
+.appointment-details p {
+    color: black;
+}
