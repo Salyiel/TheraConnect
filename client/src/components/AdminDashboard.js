@@ -69,7 +69,15 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleLogout = () => alert('Logout action');
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('therapist');
+        sessionStorage.removeItem('role');
+        window.location.href = '/login';
+    };
 
     return (
         <div className="dashboard-container">
