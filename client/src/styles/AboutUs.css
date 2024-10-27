@@ -2,6 +2,9 @@
 *{
   color: #023105;
 }
+.back-main {
+  background-color: #023105;
+}
 .about-us-container {
     justify-content: center;
     align-items: center;
@@ -21,6 +24,10 @@
     transform: translateY(100px);
     animation: fadeUp 3s ease-in-out forwards;
     animation-delay: var(--animation-delay);
+  }
+
+  .about-us-container p {
+    color: white;
   }
   
   /* Animation for text scrolling upwards */
@@ -85,7 +92,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 10px;
+    height: 0;
     background: linear-gradient(to top, rgba(255,255,255,0.9), rgba(255,255,255,0));
   }
   
@@ -95,7 +102,7 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 10px;
+    height: 0;
     background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0));
   }
   

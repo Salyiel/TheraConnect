@@ -3,6 +3,7 @@ import '../styles/AboutUs.css'; // Assuming you have a styles folder for CSS
 
 const AboutUs = () => {
   return (
+    <div className='back-main'>
     <div className="about-us-container">
       <section className="hero-section">
         <h1>About Theraconnect</h1>
@@ -155,6 +156,7 @@ const AboutUs = () => {
         one has to navigate their challenges alone.
         </p>
       </section>
+    </div>
     </div>
   );
 };
