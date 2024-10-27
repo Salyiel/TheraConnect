@@ -1,0 +1,36 @@
+/* TherapistUnderReview.css */
+.entire {
+    background: url('../images/image\ 5.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.under-review-container {
+  max-width: 600px;
+  margin: 100px auto;
+  text-align: center;
+  padding: 20px;
+  background-color: #f7f8fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.under-review-container h1 {
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.under-review-container p {
+  font-size: 1.1em;
+  color: #555;
+  margin: 10px 0;
+}
+
+.thank-you {
+  font-weight: bold;
+  color: #4a90e2;
+}

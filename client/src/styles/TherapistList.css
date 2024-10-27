@@ -1,0 +1,62 @@
+.dashboard-container {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+}
+
+.navbar {
+    background-color: #02320a;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+}
+
+.logout-button button {
+    background-color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.content-wrapper {
+    padding: 20px;
+}
+
+.welcome-section {
+    margin-bottom: 20px;
+}
+
+.therapists-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.therapists-card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.no-therapists {
+    color: #999;
+}
+
+.therapist-image {
+    animation: none;
+}

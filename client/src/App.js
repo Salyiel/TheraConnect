@@ -14,17 +14,16 @@ import ForgotPassword from './components/ForgotPassword';
 import AboutUs from './components/AboutUs'
 import TherapistInfo from './components/TherapistInfo';
 import TherapistProfile from './components/TherapistProfile';
-import TherapistDashboard from './pages/TherapistDashboard';
-import Appointments from './components/Therapist/Appointments';
-import Client from './components/Therapist/Client';
-import Messages from './components/Therapist/Messages';
-import Profile1 from './components/Therapist/Profile1';
-import Sidebar from './components/Therapist/Sidebar';
-import Resources from './components/Therapist/Resources';
-import Dashboard from './components/Therapist/Dashboard';
-import Header from './components/Therapist/Header';
-import AdminPage from './components/AdminPage';
-
+import TherapistDashboard from './components/TherapistDashboard';
+import Appointments from './components/Appointments';
+import Conversations from './components/Conversations';
+import ConversationMessages from './components/ConversationMessages';
+import Waiting from './components/Waiting';
+import AdminDashboard from './components/AdminDashboard';
+import ClientList from './components/ClientList';
+import TherapistList from './components/TherapistList';
+import Reports from './components/Reports';
+import Banned from './components/Banned';
 
 function App() {
   return (
@@ -51,16 +50,16 @@ function App() {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/therapist-info" element={<TherapistInfo />} />
           <Route path="/therapist-profile/:id" element={<TherapistProfile />} />
-          <Route path="/therapist-dashboard" element={< TherapistDashboard />} />
-          <Route path="/therapist-dashboard/profile" element={< Profile1 />}/>
-          <Route path="/therapist-dashboard/clients" element={< Client />}/>
-          <Route path="/therapist-dashboard/appointments" element={< Appointments />}/>
-          <Route path="/therapist-dashboard/messages" element={< Messages />}/>
-          <Route path="/therapist-dashboard/dashboard" element={< Dashboard />}/>
-          <Route path="/therapist-dashboard/resources" element={< Resources />}/>
-    
-      
-          <Route path="/adminpage" element={<AdminPage/>} />
+          <Route path="/therapist" element={<TherapistDashboard />} />
+          <Route path="/appointments" element={<Appointments />} />
+          <Route path="/conversations" element={<Conversations />} />
+          <Route path="/chats/:conversationId" element={<ConversationMessages />} />
+          <Route path="/waiting" element={<Waiting />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/client-list" element={<ClientList />} />
+          <Route path="/therapist-list" element={<TherapistList />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/banned" element={<Banned />} />
         </Routes>
       </div>
     </Router>

@@ -1,0 +1,76 @@
+/* src/styles/ConversationMessages.css */
+
+.conversation-messages-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 20px;
+    background: url('../images/image\ 5.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.messages-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.message {
+    padding: 10px;
+    border-radius: 8px;
+    margin: 15px 0; /* Increased margin for more space between messages */
+    max-width: 100%;
+    word-wrap: break-word;
+    position: relative;
+}
+
+.received {
+    background-color: #668a03; /* Light green for sent messages */
+    text-align: left;
+    font-size: 1.5rem;
+    max-width: 250px;
+}
+
+.sent {
+    background-color: #c8e6c9; /* Light green for sent messages */
+    text-align: right;
+    font-size: 1.5rem;
+    max-width: 250px; /* Set max-width */
+    margin-left: auto; /* Pushes the message to the right */
+    padding: 10px; /* Optional: adds some padding inside the message */
+    border-radius: 10px; /* Optional: adds rounded corners */
+}
+
+.sender-name {
+    font-weight: bold;
+}
+
+.sender-you {
+    font-weight: bold;
+}
+
+.new-message-bar {
+    display: flex;
+    align-items: center;
+}
+
+.new-message-bar input {
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.new-message-bar button {
+    padding: 20px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #034718; /* Bootstrap primary color */
+    color: white;
+    cursor: pointer;
+}
+
+.new-message-bar button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}

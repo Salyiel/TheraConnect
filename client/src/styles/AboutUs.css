@@ -1,14 +1,19 @@
 /* General Styles for About Us Page */
+*{
+  color: #023105;
+}
+.back-main {
+  background-color: #023105;
+}
 .about-us-container {
     justify-content: center;
     align-items: center;
-    color: #000000;
+    color: #082901;
     font-family: 'Helvetica Neue', sans-serif;
     position: relative;
     overflow: hidden;
     height: 100%;
-    background-color: #ffffff;
-
+    background-color: #023105;
   }
   
   section {
@@ -19,6 +24,10 @@
     transform: translateY(100px);
     animation: fadeUp 3s ease-in-out forwards;
     animation-delay: var(--animation-delay);
+  }
+
+  .about-us-container p {
+    color: white;
   }
   
   /* Animation for text scrolling upwards */
@@ -32,7 +41,7 @@
   /* Styling for each section with an elegant design */
   .about-us-container h1, h2 {
     font-size: 2.5rem;
-    color: #000000;
+    color: #ffffff;
     margin-bottom: 20px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
@@ -42,8 +51,7 @@
     font-size: 1.5rem;
     line-height: 1.8;
     margin-bottom: 15px;
-    color: #000000;
-    text-align: justify;
+    color: #ffffff;
   }
   
   /* Add a bit of color and spacing to list items */
@@ -55,7 +63,7 @@
   
   ul li span, ol li span {
     font-weight: bold;
-    color: #000000; /* A stylish deep teal */
+    color: #ffffff; /* A stylish deep teal */
     font-size: 25px;
   }
   
@@ -84,7 +92,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 10px;
+    height: 0;
     background: linear-gradient(to top, rgba(255,255,255,0.9), rgba(255,255,255,0));
   }
   
@@ -94,7 +102,7 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 10px;
+    height: 0;
     background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0));
   }
   

@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from app import db, app, mail
-from models import User, OTP, PendingVerification, EmailChangeVerification, Note, TherapistProfile, Booking, Appointment, Therapist, Client, Resource, Announcement
+from models import User, OTP, PendingVerification, AdminAuth, EmailChangeVerification, Note, TherapistProfile, Booking, UserConversation, Conversation, Report, Chats, TherapistSubmission
 from flask_mail import Message
 from flask_bcrypt import Bcrypt
 from datetime import datetime, timedelta, timezone
@@ -71,6 +71,34 @@ def send_otp_email(email, otp):
         mail.send(msg)
     except Exception as e:
         print(f"Failed to send OTP email: {e}")
+
+def send_admin_otp_email(admin_identifier, admin_email, otp, temporary_password):
+    """Send OTP email to the admin."""
+    expiry_time = "10 minutes" 
+    msg = Message(
+        'Admin details from Theraconnect',
+        recipients=[admin_email],
+        sender='noreply@tc.com'
+    )
+    msg.body = f"""
+    Hello {admin_identifier},
+
+    Your One-Time temporary password is: {temporary_password}.
+    Your One-Time Password (OTP) is: {otp}.
+
+    Please note:
+    - The Temporary Password and the OTP are both valid for {expiry_time}.
+    - Do not share this OTP or temporary password with anyone.
+    - If you did not request this, please ignore this email.
+
+    Best regards,
+    The Theraconnect Team
+    """
+    try:
+        mail.send(msg)
+    except Exception as e:
+        print(f"Failed to send OTP email: {e}")
+
 
 def send_password_reset_email(email, otp):
     expiry_time = "10 minutes" 
@@ -226,7 +254,7 @@ def register():
         existing_record.password = password
         existing_record.role = role
         existing_record.expires_at = datetime.utcnow() + timedelta(hours=1)  # Reset expiry time
-        existing_record.is_verified = False
+        existing_record.is_verified = "no"
     else:
         # Create a new record if none exists
         pending_verification = PendingVerification(
@@ -240,7 +268,7 @@ def register():
             password=password,
             role=role,
             expires_at=datetime.utcnow() + timedelta(hours=1),  # Set expiry as needed
-            is_verified=False
+            is_verified= "no"
         )
         db.session.add(pending_verification)
 
@@ -294,7 +322,7 @@ def verify_code():
         phone=pending_verification.phone,
         password=pending_verification.password,  # Use a hashed password; adjust as needed
         role=pending_verification.role,  # Default role, you might adjust this based on your logic
-        is_verified=False
+        is_verified=pending_verification.is_verified
     )
 
     # Store the new user in the database
@@ -394,10 +422,110 @@ def verify_otp():
         'name': user.name,
         'email': user.email,
         'therapist': user.therapist_id,
-        'role': user.role
+        'role': user.role,
+        'isVerified' : user.is_verified
     }
 
     return jsonify({ 'message': 'OTP verified successfully!', 'token': token, 'user': user_details }), 200
+
+
+@app.route('/api/request-admin-otp', methods=['POST', 'OPTIONS'])
+def request_admin_otp():
+    if request.method == 'OPTIONS':
+        return '', 200  # Handle preflight requests
+
+    data = request.get_json()
+
+    if data is None:
+        return jsonify({'error': 'Invalid JSON format!'}), 400
+
+    admin_identifier = data.get('identifier')  # This could be 'admin' or 'admin 3'
+
+    # Check if the admin identifier is valid
+    if admin_identifier not in ['admin', 'admin a', 'admin t', 'admin b', 'admin s']:
+        return jsonify({'error': 'Invalid admin identifier!'}), 400
+
+    # Fetch the admin's email from .env based on the identifier
+    if admin_identifier == 'admin':
+        admin_email = os.getenv('ADMIN_EMAIL_ADMIN')  # Unique email for admin
+    elif admin_identifier == 'admin a':
+        admin_email = os.getenv('ADMIN_EMAIL_ADMINA')
+    elif admin_identifier == 'admin t':
+        admin_email = os.getenv('ADMIN_EMAIL_ADMINT')
+    elif admin_identifier == 'admin b':
+        admin_email = os.getenv('ADMIN_EMAIL_ADMINB')
+    elif admin_identifier == 'admin s':
+        admin_email = os.getenv('ADMIN_EMAIL_ADMINS')
+
+    if not admin_email:
+        return jsonify({'error': 'Admin email not configured!'}), 500
+
+    # Generate a new temporary password and OTP
+    temporary_password = generate_verification_code(8)  # Generate an 8 character password
+    otp = str(random.randint(100000, 999999))  # Generate a 6-digit OTP
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=10)  # OTP valid for 10 minutes
+
+    # Save the OTP and temporary password to the database for verification
+    auth_entry = AdminAuth(
+        admin_identifier=admin_identifier,
+        generated_password=temporary_password,
+        otp=otp,
+        created_at=datetime.now(timezone.utc),
+        expires_at=expires_at
+    )
+    db.session.add(auth_entry)
+    db.session.commit()
+
+    # Send the OTP email
+    send_admin_otp_email(admin_identifier, admin_email, otp, temporary_password)
+
+    return jsonify({'message': 'Temporary password and OTP sent to admin email!'}), 200
+
+
+@app.route('/api/verify-admin-otp', methods=['POST'])
+def verify_admin_otp():
+    data = request.get_json()
+
+    if data is None:
+        return jsonify({'error': 'Invalid JSON format!'}), 400
+
+    admin_identifier = data.get('identifier')
+    temporary_password = data.get('temporary_password')
+    otp = data.get('otp')
+
+    # Check for the admin entry in the database
+    admin_entry = AdminAuth.query.filter_by(admin_identifier=admin_identifier).first()
+
+    if admin_entry is None or admin_entry.otp != otp or admin_entry.generated_password != temporary_password:
+        return jsonify({'error': 'Invalid admin identifier, OTP, or temporary password!'}), 400
+
+    if admin_entry.is_expired():
+        return jsonify({'error': 'OTP has expired!'}), 400
+
+    # If valid, generate a token for the admin
+    token = pyjwt.encode({
+        'sub': admin_identifier,  # Admin ID as subject
+        'role': 'admin',  # Assuming role is 'admin'
+        'exp': datetime.utcnow() + timedelta(hours=1)  # Token expiration time
+    }, SECRET_KEY, algorithm='HS256')
+
+    # Optionally, delete the OTP entry after successful verification
+    db.session.delete(admin_entry)  # This might depend on your use case
+    db.session.commit()
+
+    user_details = {
+
+        'name': admin_identifier,
+        'role': "admin",
+    }
+
+    return jsonify({
+        'message': 'Admin OTP verified successfully!',
+        'token': token,
+        'admin_identifier': admin_entry.admin_identifier,
+        'user': user_details
+    }), 200
+
 
 
 @app.route('/api/profile', methods=['GET', 'OPTIONS'])
@@ -1080,308 +1208,992 @@ def get_primary_therapist(user_id):
         print("Error fetching primary therapist:", e)
         return jsonify({'error': 'An error occurred while fetching the therapist'}), 500
 
-# ****************************Therapist Page***********************************************************************
 
-# Endpoint to get all clients
-@app.route('/api/clients', methods=['GET'])
-def get_clients():
-    therapist_id = request.args.get('therapist_id')
+# Get Therapist Dashboard Info
+@app.route('/api/therapist/dashboard', methods=['GET', 'OPTIONS'])
+def get_therapist_dashboard():
+    if request.method == 'OPTIONS':
+        return '', 200  # Return 200 OK for preflight requests
 
-    # Check if therapist_id is provided
-    if not therapist_id:
-        return jsonify({"error": "Therapist ID is required"}), 400
+    token = request.headers.get('Authorization')  # Get token from Authorization header
+    if not token:
+        return jsonify({'error': 'Token is missing!'}), 401
 
     try:
-        # Query clients assigned to the specified therapist
-        clients = Client.query.filter_by(therapist_id=therapist_id).all()
-        
-        # Format the clients into a list of dictionaries
-        client_list = [
-            {
-                "id": client.id,
-                "name": client.name,
-                "lastVisit": client.last_visit.strftime('%Y-%m-%d') if client.last_visit else None,
-                "condition": client.condition,
-                "phone": client.phone,
-                "email": client.email
-            } for client in clients
-        ]
-        
-        return jsonify(client_list), 200
-    
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
+        # Remove 'Bearer ' from the token
+        token = token.split(" ")[1]
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])  # Decode the token
+        therapist_id = decoded['sub']  # Get the therapist's user ID from the token
 
-@app.route('/api/appointments', methods=['POST'])
-def schedule_appointment():
-    data = request.json
-    client_id = data.get('client_id')
-    therapist_id = data.get('therapist_id')
-    appointment_date = datetime.strptime(data['appointment_date'], '%Y-%m-%d').date()
-    appointment_time = data.get('appointment_time')
+        # Fetch the therapist user from the database
+        therapist = User.query.filter_by(id=therapist_id, role='therapist').first()
 
-    if not client_id or not therapist_id or not appointment_time:
-        return jsonify({"error": "Client ID, Therapist ID, date, and time are required."}), 400
+        if not therapist:
+            return jsonify({"error": "Therapist not found"}), 404
 
-    # Create new appointment
-    new_appointment = Appointment(
-        client_id=client_id,
-        therapist_id=therapist_id,
-        appointment_date=appointment_date,
-        appointment_time=appointment_time
-    )
-    db.session.add(new_appointment)
-    db.session.commit()
+        # Fetch Therapist Profile Data
+        profile = TherapistProfile.query.filter_by(user_id=therapist.id).first()
 
-    return jsonify({"message": "Appointment scheduled successfully", "appointment_id": new_appointment.id}), 201
-@app.route('/api/appointments/client/<int:client_id>', methods=['GET'])
-def get_client_appointments(client_id):
-    appointments = Appointment.query.filter_by(client_id=client_id).all()
-    appointment_list = [
-        {
-            "id": appt.id,
-            "appointmentDate": appt.appointment_date.strftime('%Y-%m-%d'),
-            "appointmentTime": appt.appointment_time,
-            "therapist_id": appt.therapist_id,
-            "therapist_name": appt.therapist.name
+        if not profile:
+            return jsonify({"error": "Therapist profile not found"}), 404
+
+        therapist_data = {
+            "name": therapist.name,
+            "email": therapist.email,
+            "image": profile.image,
+            "license_number": profile.license_number,
+            "qualifications": profile.qualifications,
+            "specialties": profile.specialties,
+            "experience_years": profile.experience_years,
+            "availability": profile.availability,
+            "bio": profile.bio,
+            "languages": profile.languages,
+            "location": profile.location,
         }
-        for appt in appointments
-    ]
-    return jsonify(appointment_list), 200
 
+        return jsonify(therapist_data), 200
 
-# # Get all resources
-# @app.route('/api/resources', methods=['GET'])
-# def get_resources():
-#     resources = Resource.query.all()
-#     return jsonify([resource.to_dict() for resource in resources]), 200
-
-# # Add a new resource
-# @app.route('/api/resources', methods=['POST'])
-# def add_resource():
-#     data = request.json
-#     new_resource = Resource(
-#         title=data['title'],
-#         topic=data['topic'],
-#         url=data['url']
-#     )
-#     db.session.add(new_resource)
-#     db.session.commit()
-#     return jsonify(new_resource.to_dict()), 201
-
-# *****************************Admin Page**************************************************************************
-@app.route('/')
-def home():
-    return "Welcome to the Admin Dashboard!"
-
-# Route to sub@app.route('/api/therapist-info', methods=['POST'])
-def submit_therapist_info():
-    data = request.get_json()
-
-    # Validate required fields
-    required_fields = ['bio', 'licenseno', 'specialties', 'experience', 'qualifications', 'availability', 'contactNumber']
-    missing_fields = [field for field in required_fields if field not in data]
-    if missing_fields:
-        return jsonify({"error": f"Missing fields: {', '.join(missing_fields)}"}), 400
-
-    try:
-        new_therapist = Therapist(
-            bio=data['bio'],
-            licenseno=data['licenseno'],
-            specialties=data['specialties'],
-            experience=data['experience'],
-            qualifications=data['qualifications'],
-            availability=data['availability'],
-            contact_number=data['contactNumber'],
-            status='pending'
-        )
-        db.session.add(new_therapist)
-        db.session.commit()
-        return jsonify({"message": "Therapist info submitted for approval!"}), 201
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired!'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'error': 'Kindly Log In First!'}), 401
     except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"Server error: {str(e)}"}), 500
-
-# Route to fetch pending therapist submissions
-@app.route('/api/therapist-pending-list', methods=['GET'])
-@jwt_required()
-def get_pending_therapists():
-    pending_therapists = Therapist.query.filter_by(status='pending').all()
-    return jsonify([therapist.serialize() for therapist in pending_therapists]), 200
-
-# Route to approve or disapprove therapist with notifications
-@app.route('/api/therapist-status-update/<int:id>', methods=['PATCH'])
-@jwt_required()
-def update_therapist_status(id):
-    therapist = Therapist.query.get_or_404(id)
-    data = request.get_json()
-
-    if 'status' not in data:
-        return jsonify({'error': 'Status is required.'}), 400
-
-    status = data['status'].lower()
-    if status == 'approved':
-        therapist.status = 'approved'
-        notification_message = f'Therapist {therapist.name} has been approved.'
-    elif status == 'rejected':
-        therapist.status = 'rejected'
-        notification_message = f'Therapist {therapist.name} has been rejected.'
-    else:
-        return jsonify({'error': 'Invalid status. Use "approved" or "rejected".'}), 400
-
-    db.session.commit()
-
-    send_notification(therapist, notification_message)
-    return jsonify({'message': notification_message}), 200
-
-def send_notification(therapist, message):
-    print(f"Notification sent to {therapist.contact_number}: {message}")
-
-# Route to delete a therapist
-@app.route('/api/delete-therapist/<int:id>', methods=['DELETE'])
-@jwt_required()
-def delete_therapist(id):
-    therapist = Therapist.query.get_or_404(id)
-    try:
-        db.session.delete(therapist)
-        db.session.commit()
-        return jsonify({'message': f'Therapist {therapist.name} deleted successfully'}), 204
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-# Admin login with authentication
-@app.route('/api/admin-login', methods=['POST'])
-def admin_login():
-    email = request.json.get('email')
-    password = request.json.get('password')
-    otp = request.json.get('otp')
-    if email == 'admin@example.com' and password == 'password' and otp == '123456':
-        access_token = create_access_token(identity=email)
-        return jsonify(access_token=access_token), 200
-    return jsonify({"msg": "Bad credentials"}), 401
-
-# Manage resources endpoint
-@app.route('/api/resources', methods=['GET', 'POST'])
-@jwt_required()
-def manage_resources():
-    user_role = get_jwt_identity()['role']  # Get the role from JWT token (assuming role is stored in token)
+        print("Error occurred:", e)  # Log the error for debugging
+        return jsonify({'error': 'An error occurred while fetching the dashboard data.'}), 500
     
-    if request.method == 'POST':
-        # Only allow admins and therapists to add new resources
-        if user_role not in ['admin', 'therapist']:
-            return jsonify({'error': 'Unauthorized access'}), 403
 
-        data = request.get_json()
-        new_resource = Resource(
-            title=data['title'],
-            topic=data.get('topic', ''),  # Optional if topic is not mandatory
-            url=data['url'],  # Use 'url' to stay consistent
-            is_approved=user_role == 'admin',  # Auto-approve if added by an admin
-            added_by=get_jwt_identity()['user_id']  # Set the current user as the one who added it
+# Get Total Clients for Therapist
+@app.route('/api/therapist/total-clients', methods=['GET'])
+def get_total_clients():
+    if request.method == 'OPTIONS':
+        return '', 200  # Return 200 OK for preflight requests
+
+    token = request.headers.get('Authorization')  # Get token from Authorization header
+    if not token:
+        return jsonify({'error': 'Token is missing!'}), 401
+
+    try:
+        # Remove 'Bearer ' from the token
+        token = token.split(" ")[1]
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])  # Decode the token
+        therapist_id = decoded['sub']  # Get the therapist's user ID from the token
+
+        # Count clients associated with the therapist
+        total_clients = User.query.filter_by(therapist_id=therapist_id).count()
+
+        return jsonify({'total_clients': total_clients}), 200
+
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired!'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'error': 'Kindly Log In First!'}), 401
+    except Exception as e:
+        print("Error occurred:", e)  # Log the error for debugging
+        return jsonify({'error': 'An error occurred while fetching total clients.'}), 500
+
+
+
+# Get Therapist's Upcoming Appointments
+@app.route('/api/therapist/appointments', methods=['GET', 'OPTIONS'])
+def get_therapist_appointments():
+    if request.method == 'OPTIONS':
+        return '', 200  # Return 200 OK for preflight requests
+
+    token = request.headers.get('Authorization')  # Get token from Authorization header
+    if not token:
+        return jsonify({'error': 'Token is missing!'}), 401
+
+    try:
+        # Remove 'Bearer ' from the token
+        token = token.split(" ")[1]
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])  # Decode the token
+        therapist_id = decoded['sub']  # Get the therapist's user ID from the token
+
+        # Fetch the therapist user from the database
+        therapist = User.query.filter_by(id=therapist_id, role='therapist').first()
+
+        if not therapist:
+            return jsonify({"error": "Therapist not found"}), 404
+
+        # Fetch the upcoming appointments for the therapist
+        appointments = Booking.query.filter_by(therapist_id=therapist.id).all()
+
+        appointments_data = []
+        for appointment in appointments:
+            client = User.query.filter_by(id=appointment.client_id).first()
+            appointments_data.append({
+                "client_name": client.name,
+                "date": appointment.date.strftime('%Y-%m-%d'),
+                "time": appointment.time,
+            })
+
+        return jsonify(appointments_data), 200
+
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired!'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'error': 'Kindly Log In First!'}), 401
+    except Exception as e:
+        print("Error occurred:", e)  # Log the error for debugging
+        return jsonify({'error': 'An error occurred while fetching the appointments data.'}), 500
+    
+
+
+# Utility function to decode token and retrieve user ID
+def get_user_id_from_token():
+    token = request.headers.get('Authorization')
+    if not token:
+        return None
+
+    try:
+        # Remove 'Bearer ' from the token
+        token = token.split(" ")[1]
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        return decoded['sub']
+    except pyjwt.ExpiredSignatureError:
+        return None
+    except pyjwt.InvalidTokenError:
+        return None
+
+# Get all conversations for the authenticated user
+@app.route('/api/conversations', methods=['GET'])
+def get_conversations():
+    user_id = get_user_id_from_token()  # Get the user ID from the token
+    if not user_id:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    # Fetch conversations the user is part of
+    conversations = (
+        Conversation.query
+        .join(UserConversation)
+        .filter(UserConversation.user_id == user_id)
+        .all()
+    )
+
+    conversation_data = []
+    
+    for conv in conversations:
+        # Fetch the last message for each conversation, if available
+        last_message = (
+            Chats.query
+            .filter_by(conversation_id=conv.id)
+            .order_by(Chats.timestamp.desc())
+            .first()
         )
-        db.session.add(new_resource)
-        db.session.commit()
-
-        if user_role == 'therapist':  # Notify admin if added by a therapist
-            notify_admin_new_resource(new_resource)
         
-        status_message = 'Resource added and pending admin approval' if user_role == 'therapist' else 'Resource added and approved'
-        return jsonify({'message': status_message}), 201
+        # Find the other participant's name
+        other_participant = (
+            User.query
+            .join(UserConversation)
+            .filter(UserConversation.conversation_id == conv.id)
+            .filter(UserConversation.user_id != user_id)
+            .first()
+        )
 
-    # If it's a GET request, return resources based on the user role
-    if user_role == 'admin':
-        resources = Resource.query.all()
-    else:
-        resources = Resource.query.filter_by(is_approved=True).all()
+        # Create conversation data including other participant's name
+        conversation_data.append({
+            'id': conv.id,
+            'lastMessage': last_message.content if last_message else 'No messages yet',
+            'timestamp': last_message.timestamp if last_message else conv.created_at,
+            'otherParticipant': other_participant.name if other_participant else 'Unknown'
+        })
+    
+    return jsonify(conversation_data), 200
 
-    resource_list = [
-        {
-            'id': r.id,
-            'title': r.title,
-            'topic': r.topic,
-            'url': r.url,
-            'is_approved': r.is_approved,
-            'added_by': r.added_by,
-            'added_date': r.added_date.strftime('%Y-%m-%d')
-        } for r in resources
-    ]
-    return jsonify(resource_list), 200
 
-# Approve or Reject Resource by Admin
-@app.route('/api/resources/<int:resource_id>/approve', methods=['PATCH'])
-@jwt_required()
-def approve_resource(resource_id):
-    user_role = get_jwt_identity()['role']
-    if user_role != 'admin':
-        return jsonify({'error': 'Only admins can approve or reject resources'}), 403
-    
-    action = request.json.get('action')
-    if action not in ['approve', 'reject']:
-        return jsonify({'error': 'Invalid action. Use "approve" or "reject"'}), 400
-    
-    resource = Resource.query.get_or_404(resource_id)
-    if action == 'approve':
-        resource.is_approved = True
-        message = 'Resource approved successfully'
-    else:
-        db.session.delete(resource)
-        message = 'Resource rejected and deleted successfully'
-    
+# Create a new conversation
+@app.route('/api/conversations', methods=['POST'])
+def create_or_get_conversation():
+    user_id = get_user_id_from_token()
+    if not user_id:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    data = request.get_json()
+    participant_ids = data.get('participant_ids', [])
+
+    if not participant_ids or len(participant_ids) < 2:
+        return jsonify({'error': 'At least two participants are required for a conversation.'}), 400
+
+    try:
+        # Ensure all participant IDs are integers
+        participant_ids = [int(pid) for pid in participant_ids]
+    except ValueError:
+        return jsonify({'error': 'Participant IDs must be integers.'}), 400
+
+    # Sort participant IDs to ensure consistent comparison
+    participant_ids_sorted = sorted(participant_ids)
+
+    # Check if a conversation with the same participants already exists
+    existing_conversations = Conversation.query.join(UserConversation).filter(
+        UserConversation.user_id.in_(participant_ids_sorted)
+    ).all()
+
+    for conversation in existing_conversations:
+        conversation_participants = [uc.sender_id for uc in conversation.chats]
+        if sorted(conversation_participants) == participant_ids_sorted:
+            # Return the existing conversation ID if found
+            return jsonify({"message": "Conversation already exists", "conversation_id": conversation.id}), 200
+
+    # If no conversation exists, create a new one
+    conversation = Conversation()
+    db.session.add(conversation)
+    db.session.commit()  # Commit to save the conversation and get its ID
+
+    # Add participants to the new conversation
+    for participant_id in participant_ids:
+        user_conversation = UserConversation(user_id=participant_id, conversation_id=conversation.id)
+        db.session.add(user_conversation)
+
     db.session.commit()
-    return jsonify({'message': message}), 200
+    return jsonify({"message": "Conversation created", "conversation_id": conversation.id}), 201
 
-# Helper function to notify admin of new resource (implement as needed)
-def notify_admin_new_resource(resource):
-    # Example: notify via email, update dashboard, etc.
-    pass
 
-# Updated get_users endpoint to filter users by role ('client' or 'therapist')
+@app.route('/api/conversations/<int:conversation_id>/messages', methods=['GET'])
+def get_messages(conversation_id):
+    user_id = get_user_id_from_token()
+    if not user_id:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    messages = Chats.query.filter_by(conversation_id=conversation_id).all()
+    return jsonify([
+        {
+            "id": msg.id,
+            "content": msg.content,
+            "timestamp": msg.timestamp,
+            "sender_id": msg.sender_id  # Include sender ID
+        } for msg in messages
+    ]), 200
+
+
+# Send a message in a conversation
+@app.route('/api/conversations/<int:conversation_id>/messages', methods=['POST'])
+def send_message(conversation_id):
+    user_id = get_user_id_from_token()
+    if not user_id:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    data = request.get_json()
+    content = data.get('content', '')
+
+    message = Chats(conversation_id=conversation_id, sender_id=user_id, content=content)
+    db.session.add(message)
+    db.session.commit()
+    return jsonify({"message": "Message sent", "message_id": message.id}), 201
+
+# Delete a message
+@app.route('/api/messages/<int:message_id>', methods=['DELETE'])
+def delete_message(message_id):
+    user_id = get_user_id_from_token()
+    if not user_id:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    message = Chats.query.get(message_id)
+
+    if not message:
+        return jsonify({"message": "Message not found"}), 404
+
+    # Change the message status to 'deleted' instead of removing it
+    message.status = 'deleted'
+    message.content = "This message has been deleted by the sender."  # Update content for deleted messages
+    db.session.commit()
+    return jsonify({"message": "Message deleted"}), 200
+
+# Report a message
+@app.route('/api/reports', methods=['POST'])
+def report_message():
+    user_id = get_user_id_from_token()
+    if not user_id:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    data = request.get_json()
+    message_id = data.get('message_id')
+    conversation_id = data.get('conversation_id')  # Get conversation ID from the request
+    reported_user_id = data.get('reported_user_id')  # Get reported user ID from the request
+    reason = data.get('reason')
+
+    if not reason or len(reason) > 255:
+        return jsonify({'error': 'Invalid reason provided.'}), 400
+
+    # Create the report instance with the new fields
+    report = Report(
+        message_id=message_id,
+        conversation_id=conversation_id,
+        reporter_id=user_id,
+        reported_user_id=reported_user_id,
+        reason=reason
+    )
+
+    db.session.add(report)
+    db.session.commit()
+    return jsonify({"message": "Report submitted"}), 201
+
+
+# Report a user
+@app.route('/api/reports/user', methods=['POST'])
+def report_user():
+    reporter_id = get_user_id_from_token()
+    if not reporter_id:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    data = request.get_json()
+    reported_user_id = data.get('user_id')
+    reason = data.get('reason')
+
+    if not reported_user_id or not reason:
+        return jsonify({'error': 'Reported user ID and reason are required!'}), 400
+
+    # Create a report entry
+    report = Report(
+        reporter_id=reporter_id,  # The user reporting
+        reported_user_id=reported_user_id,  # The user being reported
+        reason=reason
+    )
+
+    db.session.add(report)
+    db.session.commit()
+    
+    return jsonify({"message": "User reported successfully"}), 201
+
+
+
+@app.route('/api/admin/reports', methods=['GET'])
+def get_reports_for_admin():
+    # Verify user ID from the token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    token = auth_header.split(" ")[1]  # Assuming 'Bearer <token>'
+    
+    try:
+        # Decode the JWT token
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = decoded['sub']  # Assuming 'sub' contains the user ID
+        user_role = decoded['role']  # Extract the user role from the token
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired.'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token.'}), 401
+
+    # Check if the user is an admin
+    if user_role != 'admin':
+        return jsonify({'error': 'Access denied. Admins only.'}), 403
+
+    # Fetch all reports
+    reports = Report.query.all()
+
+    # Structure the data to include report details and associated chat messages
+    report_data = []
+    for report in reports:
+        # Fetch the reported message if it exists
+        message_data = None
+        if report.message_id:
+            message = Chats.query.get(report.message_id)
+            if message:
+                message_data = {
+                    "id": message.id,
+                    "content": message.content,
+                    "timestamp": message.timestamp,
+                    "sender_id": message.sender_id,
+                    "conversation_id": message.conversation_id
+                }
+
+        # Fetch reporter and reported user names
+        reporter = User.query.get(report.reporter_id)  # Assuming User is the model for users
+        reported_user = User.query.get(report.reported_user_id)
+
+        # Determine the reported user's status based on is_verified
+        if reported_user:
+            if reported_user.is_verified == 'terminated':
+                reported_user_status = "terminated"
+            elif reported_user.is_verified == 'banned':
+                reported_user_status = "banned"
+            else:
+                reported_user_status = "active"
+        else:
+            reported_user_status = "unknown"
+
+        # Add report details along with the message data to the report list
+        report_data.append({
+            "report_id": report.id,
+            "reporter_name": reporter.name if reporter else 'Unknown',  # Return the reporter's name
+            "reported_user_name": reported_user.name if reported_user else 'Unknown',  # Return the reported user's name
+            "message_id": report.message_id,
+            "reason": report.reason,
+            "message": message_data,
+            "reported_user_status": reported_user_status  # Include the user's ban status
+        })
+
+    return jsonify(report_data), 200
+
+
+@app.route('/api/admin/ban', methods=['POST'])
+def ban_report():
+    # Verify user ID from the token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    token = auth_header.split(" ")[1]  # Assuming 'Bearer <token>'
+
+    try:
+        # Decode the JWT token
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_role = decoded['role']  # Extract the user role from the token
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired.'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token.'}), 401
+
+    # Check if the user is an admin
+    if user_role != 'admin':
+        return jsonify({'error': 'Access denied. Admins only.'}), 403
+
+    data = request.get_json()
+    report_id = data.get('reportId')
+
+    # Fetch the report to get the reported user ID
+    report = Report.query.get(report_id)
+    if not report:
+        return jsonify({"error": "Report not found"}), 404
+
+    # Update the reported user's is_verified status to "banned"
+    reported_user = User.query.get(report.reported_user_id)
+    if reported_user:
+        reported_user.is_verified = "banned"
+        
+        # Send email notification to the user
+        user_email = reported_user.email
+        msg = Message(
+            'Your Account Has Been Temporarily Banned',
+            recipients=[user_email],
+            sender='noreply@tc.com'  # Replace with your sender email
+        )
+        msg.body = f"""
+        Hello {reported_user.name},
+
+        We regret to inform you that your account has been temporarily banned due to a report. Your account is currently under review.
+
+        If you believe this is a mistake or if you have any questions, please contact our support team.
+
+        Best regards,
+        The Theraconnect Team
+        """
+
+        try:
+            mail.send(msg)  # Assuming 'mail' is configured for Flask-Mail
+        except Exception as e:
+            print(f"Failed to send ban email: {e}")
+
+        db.session.commit()
+        return jsonify({"message": "User banned successfully, notification email sent."}), 200
+    else:
+        return jsonify({"error": "Reported user not found"}), 404
+
+
+
+@app.route('/api/admin/ignore', methods=['POST'])
+def ignore_report():
+    # Verify user ID from the token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    token = auth_header.split(" ")[1]  # Assuming 'Bearer <token>'
+
+    try:
+        # Decode the JWT token
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = decoded['sub']  # Assuming 'sub' contains the user ID
+        user_role = decoded['role']  # Extract the user role from the token
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired.'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token.'}), 401
+
+    # Check if the user is an admin
+    if user_role != 'admin':
+        return jsonify({'error': 'Access denied. Admins only.'}), 403
+
+    data = request.get_json()
+    report_id = data.get('reportId')
+
+    # Find the report to delete
+    report = Report.query.get(report_id)
+    if not report:
+        return jsonify({"error": "Report not found"}), 404
+
+    # Delete the report from the database
+    db.session.delete(report)
+    db.session.commit()
+    return jsonify({"message": "Report ignored and deleted successfully"}), 200
+
+@app.route('/api/admin/unban', methods=['POST'])
+def unban_user():
+    # Verify user ID from the token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    token = auth_header.split(" ")[1]  # Assuming 'Bearer <token>'
+
+    try:
+        # Decode the JWT token
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_role = decoded['role']  # Extract the user role from the token
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired.'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token.'}), 401
+
+    # Check if the user is an admin
+    if user_role != 'admin':
+        return jsonify({'error': 'Access denied. Admins only.'}), 403
+
+    data = request.get_json()
+    report_id = data.get('reportId')
+
+    # Fetch the report to get the reported user ID
+    report = Report.query.get(report_id)
+    if not report:
+        return jsonify({"error": "Report not found"}), 404
+
+    # Update the reported user's is_verified status to "yes"
+    reported_user = User.query.get(report.reported_user_id)
+    if reported_user:
+        reported_user.is_verified = "yes"
+
+        # Send email notification to the user
+        user_email = reported_user.email
+        msg = Message(
+            'Your Account Has Been Unbanned',
+            recipients=[user_email],
+            sender='noreply@tc.com'  # Replace with your sender email
+        )
+        msg.body = f"""
+        Hello {reported_user.name},
+
+        We are pleased to inform you that your account has been unbanned. You can now access your account again.
+
+        If you have any questions or concerns, please feel free to reach out to our support team.
+
+        Best regards,
+        The Theraconnect Team
+        """
+
+        try:
+            mail.send(msg)  # Assuming 'mail' is configured for Flask-Mail
+        except Exception as e:
+            print(f"Failed to send unban email: {e}")
+
+        db.session.commit()
+        return jsonify({"message": "User unbanned successfully, notification email sent."}), 200
+    else:
+        return jsonify({"error": "Reported user not found"}), 404
+
+
+@app.route('/api/admin/permanent_ban', methods=['POST'])
+def permanently_ban_user():
+    # Verify user ID from the token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    token = auth_header.split(" ")[1]  # Assuming 'Bearer <token>'
+
+    try:
+        # Decode the JWT token
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_role = decoded['role']  # Extract the user role from the token
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired.'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token.'}), 401
+
+    # Check if the user is an admin
+    if user_role != 'admin':
+        return jsonify({'error': 'Access denied. Admins only.'}), 403
+
+    data = request.get_json()
+    report_id = data.get('reportId')
+
+    # Fetch the report to get the reported user ID
+    report = Report.query.get(report_id)
+    if not report:
+        return jsonify({"error": "Report not found"}), 404
+
+    # Update the reported user's verification status to 'terminated'
+    reported_user = User.query.get(report.reported_user_id)
+    if reported_user:
+        reported_user.is_verified = 'terminated'  # Update the verification status
+        db.session.commit()  # Commit the changes to the database
+
+        # Optionally, send email notification to the user
+        user_email = reported_user.email
+        msg = Message(
+            'Your Account Has Been Permanently Banned',
+            recipients=[user_email],
+            sender='noreply@tc.com'  # Replace with your sender email
+        )
+        msg.body = f"""
+        Hello {reported_user.name},
+
+        We regret to inform you that your account has been permanently banned due to violations of our policies.
+
+        If you have any questions or wish to appeal this decision, please contact our support team.
+
+        Best regards,
+        The Theraconnect Team
+        """
+
+        try:
+            mail.send(msg)  # Assuming 'mail' is configured for Flask-Mail
+        except Exception as e:
+            print(f"Failed to send ban email: {e}")
+
+        return jsonify({"message": "User's account has been terminated."}), 200
+    else:
+        return jsonify({"error": "Reported user not found"}), 404
+
+
 @app.route('/api/users', methods=['GET'])
-@jwt_required()
 def get_users():
-    role = request.args.get('role')
+    # Get the token from the Authorization header
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'message': 'Token is missing.'}), 401
     
-    # Validate role parameter
-    if role not in ['client', 'therapist']:
-        return jsonify({"error": "Role must be 'client' or 'therapist'"}), 400
+    token = auth_header.split(" ")[1]  # Assuming 'Bearer <token>'
+    
+    try:
+        # Decode the JWT token
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])  # Ensure you use the correct algorithm
+        current_user_id = decoded['sub']  # Extract user ID from the decoded token
+        current_role = decoded['role']
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token has expired.'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token.'}), 401
 
-    # Query users based on the specified role
-    users = User.query.filter_by(role=role).all()
+    current_user = User.query.get(current_user_id)  # Fetch the current user
+
+    # Check if the user is not found and is not an admin
+    if not current_user and current_role != "admin":
+        return jsonify({'message': 'User not found.'}), 404
+
+    # Modify the behavior based on the user's role
+    if current_user and current_user.role == 'client':
+        # If the user is a client, return their associated therapist details
+        therapist = current_user.therapist  # Access the therapist associated with the client
+        if therapist:
+            therapist_data = {
+                'id': therapist.id,
+                'name': therapist.name,
+                'email': therapist.email,
+                'role': therapist.role,
+                'phone': therapist.phone,
+                'location': therapist.location
+            }
+            return jsonify({'therapist': therapist_data}), 200
+        else:
+            return jsonify({'message': 'No therapist assigned to this client.'}), 404
+
+    elif current_user and current_user.role == 'therapist':
+        # If the user is a therapist, return their associated clients
+        clients = User.query.filter_by(therapist_id=current_user.id).all()
+        users = clients  # Only return the clients associated with this therapist
+
+    elif current_role == 'admin':
+        # If the user is an admin, return all users
+        users = User.query.all()
+
+    else:
+        return jsonify({'message': 'Role not recognized.'}), 403
+
+    # Serialize the user data
+    user_data = [{'id': user.id, 'name': user.name, 'role': user.role} for user in users]
     
-    # Prepare response based on the role
-    if role == 'client':
-        users_list = [
-            {
-                'id': user.id,
+    return jsonify(user_data), 200
+
+
+
+@app.route('/api/conversations/<int:conversation_id>', methods=['GET'])
+def get_conversation(conversation_id):
+    user_id = get_user_id_from_token()
+    if not user_id:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    # Fetch the conversation
+    conversation = Conversation.query.filter_by(id=conversation_id).first()
+    
+    if not conversation:
+        return jsonify({'message': 'Conversation not found'}), 404
+
+    # Fetch messages in the conversation
+    messages = Chats.query.filter_by(conversation_id=conversation_id).all()
+
+    # Prepare the response data
+    conversation_data = {
+        'id': conversation.id,
+        'created_at': conversation.created_at.isoformat(),
+        'messages': [{'id': msg.id, 'content': msg.content, 'timestamp': msg.timestamp.isoformat()} for msg in messages],
+        'participants': [{'id': participant.id, 'name': participant.name} for participant in conversation.participants]  # Include participants
+    }
+
+    return jsonify(conversation_data), 200
+
+
+@app.route('/api/therapist-info', methods=['POST'])
+def submit_therapist_info():
+    user_id = get_user_id_from_token()
+    if not user_id:
+        return jsonify({'error': 'Token is missing or invalid!'}), 401
+
+    data = request.form
+
+    # Create a new TherapistSubmission entry
+    submission = TherapistSubmission(
+        user_id=user_id,
+        image=data.get('image'),
+        license_number=data.get('licenseNumber'),
+        qualifications=data.get('qualifications'),
+        specialties=data.get('specialties'),
+        experience_years=data.get('experienceYears'),
+        availability=data.get('availability'),
+        consultation_fee=data.get('consultationFee'),
+        bio=data.get('bio'),
+        languages=",".join(data.getlist('languages')),
+        location=data.get('location')
+    )
+
+    # Add the submission to the database session
+    db.session.add(submission)
+
+    # Update the user's is_verified status to "waiting"
+    user = User.query.get(user_id)
+    if user and user.is_verified == "no":
+        user.is_verified = "waiting"
+
+    # Commit both the new submission and the user update
+    db.session.commit()
+
+    return jsonify({"message": "Your information has been submitted for approval!"}), 201
+
+
+@app.route('/api/admin/pending-therapists', methods=['GET'])
+def get_pending_therapists():
+    # Query the TherapistSubmission model for all pending requests
+    pending_submissions = TherapistSubmission.query.filter_by(approved=False).all()
+    
+    # Collect all details including user information like name and email
+    pending_therapists = []
+    for submission in pending_submissions:
+        user = User.query.get(submission.user_id)  # Fetch the related user details
+        if user:
+            pending_therapists.append({
+                'user_id': user.id,
                 'name': user.name,
                 'email': user.email,
-                'phone': user.phone,
-                'therapist_id': user.therapist_id,  # therapist_id if assigned
-                'location': user.location
-            } for user in users
-        ]
-    elif role == 'therapist':
-        users_list = [
-            {
-                'id': user.id,
-                'name': user.name,
-                'email': user.email,
+                'gender': user.gender,
+                'dob': user.dob.strftime('%Y-%m-%d'),
                 'phone': user.phone,
                 'location': user.location,
-                'client_count': len(user.clients)  # Counts associated clients for therapists
-            } for user in users
-        ]
+                'specialties': submission.specialties,
+                'qualifications': submission.qualifications,
+                'experience_years': submission.experience_years,
+                'availability': submission.availability,
+                'consultation_fee': submission.consultation_fee,
+                'bio': submission.bio,
+                'languages': submission.languages,
+                'license_number': submission.license_number,
+                'approved': submission.approved,
+                'image': submission.image
+            })
     
-    return jsonify(users_list), 200
+    # Return the pending therapists as a JSON response
+    return jsonify(pending_therapists), 200
 
-# Route for announcements
-@app.route('/api/announcements', methods=['POST'])
-@jwt_required()
-def post_announcement():
+
+@app.route('/api/admin/decline/<int:therapist_id>', methods=['POST'])
+def decline_therapist(therapist_id):
     data = request.get_json()
-    new_announcement = Announcement(role=data['role'], message=data['message'])
-    db.session.add(new_announcement)
+    remarks = data.get('remarks', '')
+
+    # Fetch the therapist submission
+    submission = TherapistSubmission.query.filter_by(user_id=therapist_id).first()
+    if not submission:
+        return jsonify({"message": "Therapist submission not found"}), 404
+
+    # Update the user verification status
+    user = User.query.get(therapist_id)
+    if user:
+        user.is_verified = 'no'
+    
+    # Remove the therapist from the submission table
+    db.session.delete(submission)
+
+    # Send an email to the therapist with the remarks
+    therapist_email = user.email
+    msg = Message(
+        'Your Application to Theraconnect has been Declined',
+        recipients=[therapist_email],
+        sender='noreply@tc.com'
+    )
+    msg.body = f"""
+    Hello {user.name},
+
+    We regret to inform you that your application has been declined. Here are the remarks from our admin:
+
+    {remarks}
+
+    Please make the necessary changes and feel free to reapply.
+
+    Best regards,
+    The Theraconnect Team
+    """
+
+    try:
+        mail.send(msg)
+    except Exception as e:
+        print(f"Failed to send decline email: {e}")
+
     db.session.commit()
-    return jsonify({'message': 'Announcement posted successfully'}), 201
+    return jsonify({"message": "Therapist declined successfully"}), 200
+
+
+@app.route('/api/admin/approve/<int:therapist_id>', methods=['POST'])
+def approve_therapist(therapist_id):
+    # Fetch the therapist submission
+    submission = TherapistSubmission.query.filter_by(user_id=therapist_id).first()
+    if not submission:
+        return jsonify({"message": "Therapist submission not found"}), 404
+
+    # Create the therapist profile
+    therapist_profile = TherapistProfile(
+        user_id=submission.user_id,
+        image=submission.image,
+        license_number=submission.license_number,
+        qualifications=submission.qualifications,
+        specialties=submission.specialties,
+        experience_years=submission.experience_years,
+        availability=submission.availability,
+        consultation_fee=submission.consultation_fee,
+        bio=submission.bio,
+        languages=submission.languages,
+        location=submission.location
+    )
+
+    db.session.add(therapist_profile)
+
+    # Update the user verification status
+    user = User.query.get(therapist_id)
+    if user:
+        user.is_verified = 'yes'
+
+    # Remove the therapist from the submission table
+    db.session.delete(submission)
+
+    # Send an email to the therapist informing them of the approval
+    therapist_email = user.email
+    msg = Message(
+        'Congratulations! Your Application to Theraconnect has been Approved',
+        recipients=[therapist_email],
+        sender='noreply@tc.com'
+    )
+    msg.body = f"""
+    Hello {user.name},
+
+    Congratulations! We are pleased to inform you that your application has been approved.
+
+    Welcome to Theraconnect! We look forward to having you on our platform.
+
+    Best regards,
+    The Theraconnect Team
+    """
+
+    try:
+        mail.send(msg)
+    except Exception as e:
+        print(f"Failed to send approval email: {e}")
+
+    db.session.commit()
+    return jsonify({"message": "Therapist approved successfully"}), 200
+
+
+@app.route('/api/clients', methods=['GET', 'OPTIONS'])
+def get_clients():
+
+    if request.method == 'OPTIONS':
+        return '', 200  # Return 200 OK for preflight requests
+    
+    # Get the token from the Authorization header
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'message': 'Token is missing.'}), 401
+    
+    token = auth_header.split(" ")[1]  # Assuming 'Bearer <token>'
+    
+    try:
+        # Decode the JWT token
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        current_role = decoded['role']
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token has expired.'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token.'}), 401
+
+    if current_role != 'admin':
+        return jsonify({'message': 'Access denied.'}), 403
+
+    # Fetch all clients
+    clients = User.query.filter_by(role='client').all()
+
+    # Serialize the client data
+    client_data = [{'id': client.id, 'name': client.name, 'email': client.email, 'phone': client.phone} for client in clients]
+
+    return jsonify(client_data), 200
+
+
+@app.route('/api/therapists', methods=['GET', 'OPTIONS'])
+def get_therapist_list():
+
+    if request.method == 'OPTIONS':
+        return '', 200  # Return 200 OK for preflight requests
+    
+    # Get the token from the Authorization header
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'message': 'Token is missing.'}), 401
+    
+    token = auth_header.split(" ")[1]  # Assuming 'Bearer <token>'
+    
+    try:
+        # Decode the JWT token
+        decoded = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        current_role = decoded['role']
+    except pyjwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token has expired.'}), 401
+    except pyjwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token.'}), 401
+
+    if current_role != 'admin':
+        return jsonify({'message': 'Access denied.'}), 403
+
+    # Fetch all therapists
+    therapists = User.query.filter_by(role='therapist').all()
+
+    # Serialize the therapist data
+    therapist_data = [{
+        'id': therapist.id,
+        'name': therapist.name,
+        'email': therapist.email,
+        'phone': therapist.phone,
+        'location': therapist.location,
+        'qualification': therapist.qualification,
+        'experience': therapist.experience,
+        'license_number': therapist.license_number,
+        'image': therapist.image,
+        'isVerified' : therapist.is_verified
+    } for therapist in therapists]
+
+    return jsonify({'therapists': therapist_data, 'total_pages': 1, 'current_page': 1}), 200

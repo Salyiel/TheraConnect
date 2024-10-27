@@ -3,12 +3,12 @@ import '../styles/AboutUs.css'; // Assuming you have a styles folder for CSS
 import Header from './Header';
 
 const AboutUs = () => {
-  const sections = [
-    {
-      title: "About Theraconnect",
-      content: (
-        <>
-          <p>
+  return (
+    <div className='back-main'>
+    <div className="about-us-container">
+      <section className="hero-section">
+        <h1>About Theraconnect</h1>
+        <p>
             At Theraconnect, we believe that mental health care should be accessible,
             personalized, and empowering. In a world where stress, anxiety, and 
             emotional struggles are common, we aim to bridge the gap between those seeking help and
@@ -155,34 +155,29 @@ const AboutUs = () => {
               committed to staying at the forefront of industry developments and continuously improving 
               our platform based on feedback from our users and therapists.
             </li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      title: "Join Our Community",
-      content: (
-        <>
-          <p>
-            By choosing Theraconnect, you are joining a community of individuals who are committed to 
-            taking control of their mental health. Whether you are seeking support for yourself or looking to 
-            help others as a therapist, we welcome you to explore all that Theraconnect has to offer. 
-            Together, we can create a world where mental health care is accessible to all, and no 
-            one has to navigate their challenges alone.
-          </p>
-        </>
-      ),
-    },
-  ];
+        </ul>
+      </section>
 
-  return (
-    <div className="about-us-container">
-      {sections.map((section, index) => (
-        <section key={index} className={`${section.title.toLowerCase().replace(/\s+/g, '-')}-section`}>
-          <h2>{section.title}</h2>
-          {section.content}
-        </section>
-      ))}
+      <section className="services-section">
+        <h2>What We Offer</h2>
+        <ul>
+          <li>Access to a wide network of licensed therapists</li>
+          <li>Secure online booking for therapy sessions</li>
+          <li>Personalized recommendations based on your needs</li>
+        </ul>
+      </section>
+
+      <section className="community-section">
+        <h2>Join Our Community</h2>
+        <p>
+        By choosing Theraconnect, you are joining a community of individuals who are committed to 
+        taking control of their mental health. Whether you are seeking support for yourself or looking to 
+        help others as a therapist, we welcome you to explore all that Theraconnect has to offer. 
+        Together, we can create a world where mental health care is accessible to all, and no 
+        one has to navigate their challenges alone.
+        </p>
+      </section>
+    </div>
     </div>
   );
 };

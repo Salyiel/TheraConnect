@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/TherapistLanding.css";
-import firstImage from "..//images/glpg-great-lakes-psychology-group-counseling-therapy-therapist-benefits-prepare.png";
+import firstImage from "../images/istockphoto-1435001168-612x612.jpg";
 
 const TherapistLanding = () => {
   return (
@@ -30,7 +30,7 @@ const TherapistLanding = () => {
         </p>
         <ul className="button">
             <li><Link to='/login' className="cta-button">Log In</Link></li>
-            <li><Link to="/signup?role=therapist" className="cta-button">Sign Up Now</Link></li>
+            <li><Link to="/signup?role=therapist" className="cta-button">Sign Up</Link></li>
         </ul>
       </div>
 

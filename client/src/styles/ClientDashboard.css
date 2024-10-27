@@ -102,30 +102,31 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.my-sessions-card {
-  max-height: 210px;
-  overflow-y: auto;
-}
-
-.my-notes textarea {
-  width: 100%;
-  height: 100px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
-  resize: none;
-  max-height: 300px;
-  overflow-y: auto;  /* Enable vertical scrolling */
-}
-
-.notes-area {
-  width: 100%;
-  height: 100px;
-  border-radius: 5px;
-  padding: 10px;
-  max-height: 300px;
-  overflow-y: auto;  /* Enable vertical scrolling */
-}
+  .my-sessions-card {
+    max-height: 210px;
+    overflow-y: auto;
+    color: black;
+  }
+  
+  .my-notes textarea {
+    width: 100%;
+    height: 100px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    resize: none;
+    max-height: 300px;
+    overflow-y: auto;  /* Enable vertical scrolling */
+  }
+  
+  .notes-area {
+    width: 100%;
+    height: 100px;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;  /* Enable vertical scrolling */
+  }
 
 .notes-list-container {
   max-height: 150px; /* Adjust as needed */
@@ -134,9 +135,10 @@
   border: 1px solid #ccc; /* Optional: add a border */
 }
 
-.appointments-list li {
-  font-size: 15px;
-}
+  .appointments-list li {
+    font-size: 15px;
+    color: black;
+  }
 
 .resources li {
   color: #1D976C;

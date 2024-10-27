@@ -1,0 +1,199 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #02320a;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.navbar .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar .nav-links {
+    list-style-type: none;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.navbar .nav-links li {
+    display: inline;
+}
+
+.navbar .nav-links li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.navbar .logout-button button {
+    background-color: #e74c3c;
+    border: none;
+    padding: 0.5rem 1rem;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.content-wrapper {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    justify-content: space-between; /* Ensures the calendar stays at the bottom */
+    min-height: 100vh; /* Ensures it takes at least the full viewport height */
+}
+
+.content-wrapper h2 {
+    color: black;
+}
+
+/* Greeting Section */
+.greeting-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.greeting-section h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.profile-photo .photo-frame {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #3c8dbc;
+    animation: none;
+}
+
+/* Highlights Section */
+.highlights {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.highlight-box {
+    background-color: #ecf0f1;
+    padding: 1rem;
+    text-align: center;
+    border-radius: 10px;
+    width: 30%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.highlight-box h4 {
+    margin-bottom: 0.5rem;
+}
+
+.highlight-box p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: black;
+}
+
+/* Appointments Section */
+.appointments-section {
+    margin-bottom: 2rem;
+}
+
+.appointment-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.appointment-time {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.appointment-details h4 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.appointment-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.call-button, .video-button {
+    background-color: #3c8dbc;
+    border: none;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.call-button:hover, .video-button:hover {
+    background-color: #3498db;
+}
+
+/* No Appointments */
+.no-appointments {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #999;
+}
+
+/* Calendar Section */
+.calendar-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.current-time {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.calendar {
+    width: 300px;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.past-appointment {
+    background-color: #f5c6cb; /* Light red color for past appointments */
+    color: #721c24; /* Darker red text color */
+    border: 1px solid #f5c6cb; /* Optional: border matching the background */
+}
+
+.calendar-section {
+    margin-top: auto; /* Pushes the calendar section to the bottom */
+}
+

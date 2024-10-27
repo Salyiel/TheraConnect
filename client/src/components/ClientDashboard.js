@@ -182,6 +182,16 @@ const Dashboard = () => {
     }));
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('therapist');
+    sessionStorage.removeItem('role');
+    window.location.href = '/login';
+  };
+
   return (
     <div className="dashboard-containerb">
       <header className="dashboard-header">
@@ -189,9 +199,10 @@ const Dashboard = () => {
         <nav className="dashboard-nav">
           <div className='navigation-links'>
             <button className="page">{therapistPage}</button>
+            <button><Link to="/conversations">Messages</Link></button>
             <button><Link to="/profile">Profile</Link></button>
             <button><Link to="/about-us">About Us</Link></button>
-            <button>Log out</button>
+            <button onClick={handleLogout}>Logout</button>
           </div>
         </nav>
       </header>
