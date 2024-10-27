@@ -1082,7 +1082,6 @@ def get_primary_therapist(user_id):
 
 # ****************************Therapist Page***********************************************************************
 
-
 # Endpoint to get all clients
 @app.route('/api/clients', methods=['GET'])
 def get_clients():
