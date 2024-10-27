@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Enable CORS
-CORS(app)
+CORS(app, origins=["https://theraconnect-oepw.onrender.com"])
 
 # Initialize SQLAlchemy and Flask-Migrate
 db = SQLAlchemy(app)
