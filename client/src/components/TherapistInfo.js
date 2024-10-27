@@ -20,7 +20,7 @@ const TherapistInfo = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value, type } = e.target;
+    const { name, value} = e.target;
 
     if (name === 'languages') {
       setFormData({ ...formData, [name]: Array.from(e.target.selectedOptions, option => option.value) });
