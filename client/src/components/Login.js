@@ -151,10 +151,7 @@ const Login = () => {
         </div>
         <nav className="nav-links">
           <ul>
-            <li>About</li>
-            <li>Services</li>
-            <li>Careers</li>
-            <li>Login</li>
+            <button><Link to="/about-us">About Us</Link></button>
             <button className="find-therapist-btn">
               <Link to="/find-therapists">Find a therapist</Link>
             </button>

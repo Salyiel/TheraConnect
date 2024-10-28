@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Reports.css'; // Add your CSS file for styling the reports page
 
 const Reports = () => {
     const [reports, setReports] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const fetchReports = async () => {
         try {
@@ -100,6 +101,16 @@ const Reports = () => {
         }
     };
 
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('therapist');
+        sessionStorage.removeItem('role');
+        navigate('/login');
+      };
+
     if (loading) {
         return <div>Loading reports...</div>;
     }
@@ -119,9 +130,7 @@ const Reports = () => {
                     <li><Link to="/conversations">Messages</Link></li>
                     <li><Link to="/reports">Reports</Link></li>
                 </ul>
-                <div className="logout-button">
-                    <button onClick={() => alert('Logout action')}>Logout</button>
-                </div>
+                <button onClick={handleLogout}>Logout</button>
             </nav>
 
             <div className="content-wrapper">

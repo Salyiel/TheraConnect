@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from './Calendar';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import '../styles/TherapistDashboard.css'; // Ensure this matches your CSS file
 
 const TherapistDashboard = () => {
@@ -11,6 +11,7 @@ const TherapistDashboard = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [loading, setLoading] = useState(true);
     const [loadingAppointments, setLoadingAppointments] = useState(true);
+    const navigate = useNavigate();
 
     // Fetch therapist data from the backend
     useEffect(() => {
@@ -132,7 +133,7 @@ const TherapistDashboard = () => {
         sessionStorage.removeItem('userEmail');
         sessionStorage.removeItem('therapist');
         sessionStorage.removeItem('role');
-        window.location.href = '/login';
+        navigate('/login');
     };
 
     if (loading || loadingAppointments) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NotesModal from './NotesModal'; // Import the Modal
 import '../styles/ClientDashboard.css';
@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false); // Track if a user is editing a note
   const [loading, setLoading] = useState(true); // To handle the loading state
   const [therapist, setTherapist] = useState(null); // State to store therapist information
+  const navigate = useNavigate();
 
   const userName = sessionStorage.getItem('userName')
 
@@ -189,7 +190,7 @@ const Dashboard = () => {
     sessionStorage.removeItem('userEmail');
     sessionStorage.removeItem('therapist');
     sessionStorage.removeItem('role');
-    window.location.href = '/login';
+    navigate('/login');
   };
 
   return (

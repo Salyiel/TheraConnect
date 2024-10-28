@@ -2148,7 +2148,7 @@ def get_clients():
     clients = User.query.filter_by(role='client').all()
 
     # Serialize the client data
-    client_data = [{'id': client.id, 'name': client.name, 'email': client.email, 'phone': client.phone} for client in clients]
+    client_data = [{'id': client.id, 'name': client.name, 'email': client.email, 'phone': client.phone, 'location': client.location, 'gender': client.gender, 'dob': client.dob} for client in clients]
 
     return jsonify(client_data), 200
 

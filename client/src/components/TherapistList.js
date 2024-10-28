@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/TherapistList.css';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const TherapistList = () => {
     const [therapists, setTherapists] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTherapists = async () => {
@@ -28,6 +29,16 @@ const TherapistList = () => {
         fetchTherapists();
     }, []);
 
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('therapist');
+        sessionStorage.removeItem('role');
+        navigate('/login');
+    };
+
     return (
         <div className="dashboard-container">
             <nav className="navbar">
@@ -40,7 +51,7 @@ const TherapistList = () => {
                     <li><Link to="/reports">Reports</Link></li>
                 </ul>
                 <div className="logout-button">
-                    <button onClick={() => alert('Logout action')}>Logout</button>
+                <button onClick={handleLogout}>Logout</button>
                 </div>
             </nav>
 

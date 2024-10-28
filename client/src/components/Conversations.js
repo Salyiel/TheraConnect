@@ -190,8 +190,13 @@ const Conversations = () => {
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
-        window.location.href = '/login';
-    };
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('therapist');
+        sessionStorage.removeItem('role');
+        navigate('/login');
+      };
 
     const handleSelectConversation = (conversationId) => {
         const conversation = conversations.find(conv => conv.id === conversationId);

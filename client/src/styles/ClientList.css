@@ -49,8 +49,9 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
-    width: 200px;
+    width: 400px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
 }
 
 .no-clients {

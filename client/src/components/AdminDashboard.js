@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Calendar from './Calendar';
 import '../styles/AdminDashboard.css';
 import axios from 'axios';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
     const [pendingRequests, setPendingRequests] = useState([]);
@@ -11,6 +11,7 @@ const AdminDashboard = () => {
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [declineRemark, setDeclineRemark] = useState('');
     const [showRemarkModal, setShowRemarkModal] = useState(false);
+    const navigate = useNavigate();
 
     // Update current time every minute
     useEffect(() => {
@@ -76,7 +77,7 @@ const AdminDashboard = () => {
         sessionStorage.removeItem('userEmail');
         sessionStorage.removeItem('therapist');
         sessionStorage.removeItem('role');
-        window.location.href = '/login';
+        navigate('/login');
     };
 
     const admin = sessionStorage.getItem('userName')

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link} from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import "../styles/FindTherapists.css";
 
 const FindTherapists = () => {
   const [therapists, setTherapists] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
 
   // Fetch therapists data from API
   useEffect(() => {
@@ -36,6 +37,16 @@ const FindTherapists = () => {
     }
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('therapist');
+    sessionStorage.removeItem('role');
+    navigate('/login');
+  };
+
   return (
     <div className="therapists-container">
       {/* Navigation Bar */}
@@ -44,10 +55,11 @@ const FindTherapists = () => {
           <span className="thera">Thera</span><span className="connect">connect</span>
         </div>
         <nav>
-          <a href=".">About</a>
-          <a href=".">Services</a>
-          <a href=".">Mental Health Resources</a>
-          <a href="." className="highlight-button">How it works</a>
+        {/* <button className="page">{therapistPage}</button> */}
+            <button><Link to="/conversations">Messages</Link></button>
+            <button><Link to="/profile">Profile</Link></button>
+            <button><Link to="/about-us">About Us</Link></button>
+            <button onClick={handleLogout}>Logout</button>
         </nav>
       </header>
 

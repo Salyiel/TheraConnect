@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Appointments.css'; // Ensure this matches your CSS file
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Calendar from './Calendar'; // Import the Calendar component if needed
 
 const Appointments = () => {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
+    const navigate = useNavigate();
 
     // Fetch therapist's appointments from the backend
     useEffect(() => {
@@ -54,6 +55,16 @@ const Appointments = () => {
         return appointmentDateTime < currentTime;
     };
 
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('therapist');
+        sessionStorage.removeItem('role');
+        navigate('/login');
+    };
+
     if (loading) {
         return <div>Loading appointments...</div>;
     }
@@ -69,10 +80,7 @@ const Appointments = () => {
                     <li><Link to="/conversations">Messages</Link></li>
                 </ul>
                 <div className="logout-button">
-                    <button onClick={() => {
-                        sessionStorage.removeItem('token');
-                        window.location.href = '/login';
-                    }}>Logout</button>
+                    <button onClick={handleLogout}>Logout</button>
                 </div>
             </nav>
 
