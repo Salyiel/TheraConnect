@@ -8,13 +8,16 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
     "calendar": "^0.1.1",
+    "check": "^1.0.0",
     "jwt-decode": "^4.0.0",
+    "nth": "^1.1.0",
     "react": "^18.3.1",
     "react-calendar": "^5.0.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
     "socket.io-client": "^4.8.0",
+    "update": "^0.7.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

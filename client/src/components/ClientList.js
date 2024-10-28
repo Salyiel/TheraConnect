@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/ClientList.css'; // Assuming styles are similar to AdminDashboard
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ClientList = () => {
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchClients = async () => {
@@ -28,6 +29,16 @@ const ClientList = () => {
         fetchClients();
     }, []);
 
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('therapist');
+        sessionStorage.removeItem('role');
+        navigate('/login');
+      };
+
     return (
         <div className="dashboard-container">
             <nav className="navbar">
@@ -40,7 +51,7 @@ const ClientList = () => {
                     <li><Link to="/reports">Reports</Link></li>
                 </ul>
                 <div className="logout-button">
-                    <button onClick={() => alert('Logout action')}>Logout</button>
+                    <button onClick={handleLogout}>Logout</button>
                 </div>
             </nav>
 
@@ -57,9 +68,13 @@ const ClientList = () => {
                     <div className="clients-section">
                         {clients.map(client => (
                             <div className="client-card" key={client.id}>
-                                <h4>{client.name}</h4>
+                                <p>Name: {client.name}</p>
                                 <p>Email: {client.email}</p>
+                                <p>Gender: {client.gender}</p>
+                                <p>D.O.B: {client.dob}</p>
                                 <p>Phone: {client.phone}</p>
+                                <p>Location: {client.location}</p>
+                                
                             </div>
                         ))}
                     </div>

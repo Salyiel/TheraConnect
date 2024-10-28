@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Conversations.css';
+import { Link } from "react-router-dom";
 
 const Conversations = () => {
     const navigate = useNavigate();
@@ -189,8 +190,13 @@ const Conversations = () => {
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
-        window.location.href = '/login';
-    };
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('therapist');
+        sessionStorage.removeItem('role');
+        navigate('/login');
+      };
 
     const handleSelectConversation = (conversationId) => {
         const conversation = conversations.find(conv => conv.id === conversationId);
@@ -229,10 +235,9 @@ const Conversations = () => {
             <nav className="navbar">
                 <div className="logo">TheraConnect</div>
                 <ul className="nav-links">
-                    <li><a href="/therapist">Dashboard</a></li>
-                    <li><a href="/appointments">Appointments</a></li>
-                    <li><a href="/profile">Profile</a></li>
-                    <li><a href="/conversations">Messages</a></li>
+                    <li><Link to="/appointments">Appointments</Link></li>
+                    <li><Link to="/profile">Profile</Link></li>
+                    <li><Link to="/conversations">Messages</Link></li>
                 </ul>
                 <div className="logout-button">
                     <button onClick={handleLogout}>Logout</button>

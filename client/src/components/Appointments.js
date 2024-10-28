@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Appointments.css'; // Ensure this matches your CSS file
+import { Link, useNavigate } from "react-router-dom";
 import Calendar from './Calendar'; // Import the Calendar component if needed
 
 const Appointments = () => {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
+    const navigate = useNavigate();
 
     // Fetch therapist's appointments from the backend
     useEffect(() => {
@@ -53,6 +55,16 @@ const Appointments = () => {
         return appointmentDateTime < currentTime;
     };
 
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('therapist');
+        sessionStorage.removeItem('role');
+        navigate('/login');
+    };
+
     if (loading) {
         return <div>Loading appointments...</div>;
     }
@@ -62,16 +74,13 @@ const Appointments = () => {
             <nav className="navbar">
                 <div className="logo">TheraConnect</div>
                 <ul className="nav-links">
-                    <li><a href="/dashboard">Dashboard</a></li>
-                    <li><a href="/appointments">Appointments</a></li>
-                    <li><a href="/profile">Profile</a></li>
-                    <li><a href="/settings">Settings</a></li>
+                    <li><Link to="/therapist">Dashboard</Link></li>
+                    <li><Link to="/appointments">Appointments</Link></li>
+                    <li><Link to="/profile">Profile</Link></li>
+                    <li><Link to="/conversations">Messages</Link></li>
                 </ul>
                 <div className="logout-button">
-                    <button onClick={() => {
-                        sessionStorage.removeItem('token');
-                        window.location.href = '/login';
-                    }}>Logout</button>
+                    <button onClick={handleLogout}>Logout</button>
                 </div>
             </nav>
 
