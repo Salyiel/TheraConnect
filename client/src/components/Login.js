@@ -22,7 +22,7 @@ const Login = () => {
     setLoading(true);
     try {
       // Check if the user is an admin
-      const identifier = email === 'admin' || email === 'admin3' ? email : null;
+      const identifier = email === 'admin' || email === 'admin a' || email === 'admin b' || email === 'admin t' || email === 'admin s' ? email : null;
 
       // Prepare the request URL based on whether it's an admin or a normal user
       const requestUrl = identifier

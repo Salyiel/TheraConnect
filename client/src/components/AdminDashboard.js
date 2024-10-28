@@ -79,12 +79,14 @@ const AdminDashboard = () => {
         window.location.href = '/login';
     };
 
+    const admin = sessionStorage.getItem('userName')
+
     return (
         <div className="dashboard-container">
             <nav className="navbar">
                 <div className="logo">TheraConnect</div>
                 <ul className="nav-links">
-                <li><Link to="/admin">Dashboard</Link></li>
+                    <li><Link to="/admin">Dashboard</Link></li>
                     <li><Link to="/client-list">Clients</Link></li>
                     <li><Link to="/therapist-list">Therapists</Link></li>
                     <li><Link to="/conversations">Messages</Link></li>
@@ -97,7 +99,7 @@ const AdminDashboard = () => {
 
             <div className="content-wrapper">
                 <div className="welcome-section">
-                    <h2>Welcome, Admin</h2>
+                    <h2>Welcome, {admin}</h2>
                 </div>
 
                 <div className="requests-section">

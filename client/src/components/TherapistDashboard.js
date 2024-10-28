@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from './Calendar';
+import { Link } from "react-router-dom";
 import '../styles/TherapistDashboard.css'; // Ensure this matches your CSS file
 
 const TherapistDashboard = () => {
@@ -158,10 +159,10 @@ const TherapistDashboard = () => {
             <nav className="navbar">
                 <div className="logo">TheraConnect</div>
                 <ul className="nav-links">
-                    <li><a href="/therapist">Dashboard</a></li>
-                    <li><a href="/appointments">Appointments</a></li>
-                    <li><a href="/profile">Profile</a></li>
-                    <li><a href="/conversations">Messages</a></li>
+                    <li><Link to="/therapist">Dashboard</Link></li>
+                    <li><Link to="/appointments">Appointments</Link></li>
+                    <li><Link to="/profile">Profile</Link></li>
+                    <li><Link to="/conversations">Messages</Link></li>
                 </ul>
                 <div className="logout-button">
                     <button onClick={handleLogout}>Logout</button>
